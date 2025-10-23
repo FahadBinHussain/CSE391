@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Fahad Bin Hussain - Personal Web Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <style type="text/css">
+        #favorites h3 {
+            color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>Fahad Bin Hussain</h1>
+        <img src="images/profile_picture.jpg" alt="A photo of Fahad Bin Hussain" class="profile-photo" />
+    </div>
+
+    <div id="nav">
+        <ul>
+            <li><a href="#about-me">About Me</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#interests">Interests</a></li>
+            <li><a href="#favorites">Favorites</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button id="theme-toggle">Toggle Theme</button>
+    </div>
+
+    <div id="main-content">
+        <div class="section" id="about-me">
+            <h2>About Me</h2>
+            <p>
+                Hello! I'm Fahad Bin Hussain, a <strong>passionate</strong> Computer Science student at BRAC University. From a young age, I've been fascinated by how technology can solve <em>real-world problems</em>.
+            </p>
+        </div>
+
+        <div class="section" id="education">
+            <h2>Education History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Qualification</th>
+                        <th>Institution</th>
+                        <th>Passing Year</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>B.Sc. in CSE</td>
+                        <td><a href="https://www.bracu.ac.bd/">BRAC University</a></td>
+                        <td>Ongoing</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr class="description-row">
+                        <td colspan="4">
+                            During my undergraduate studies, I am focusing on core areas like Data Structures, Algorithms, and Web Programming.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>HSC (Science)</td>
+                        <td>Dhaka College</td>
+                        <td>2021</td>
+                        <td>GPA 5.00</td>
+                    </tr>
+                    <tr>
+                        <td>SSC (Science)</td>
+                        <td>Motijheel Govt. Boys' High School</td>
+                        <td>2019</td>
+                        <td>GPA 5.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section" id="interests">
+            <h2>Interests &amp; Links</h2>
+            <p>
+                For course-related discussions, you can find me on the <a href="https://discord.gg/nuDa2t8z3g">CSE 391 Discord page</a>.
+            </p>
+            <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&amp;w=2069" 
+                 alt="A laptop with code on the screen" 
+                 class="web-image"
+                 style="width: 100%; max-width: 500px; border-radius: 8px;" />
+        </div>
+
+        <div class="section" id="favorites">
+            <h2>My Favorites</h2>
+            <blockquote>
+                <p>"The most beautiful thing we can experience is the mysterious. It is the source of all true art and science."</p>
+                <p><cite>- Albert Einstein</cite></p>
+            </blockquote>
+            <h3>My Top 5 Favorite Sci-Fi Books</h3>
+            <ol>
+                <li>Dune by Frank Herbert</li>
+                <li>Foundation by Isaac Asimov</li>
+                <li>Ender's Game by Orson Scott Card</li>
+            </ol>
+        </div>
+
+        <div class="section" id="contact">
+            <h2>Contact Me</h2>
+            <p>Have a question or want to work together? Send me a message!</p>
+            
+            <form action="https://formspree.io/f/mrbyngzb" method="post" class="contact-form">
+                <fieldset>
+                    <legend>Contact Information</legend>
+                    <div class="form-group">
+                        <label for="name">Your Name:</label>
+                        <input type="text" id="name" name="name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Your Email:</label>
+                        <input type="text" id="email" name="email" />
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" rows="5" cols="40"></textarea>
+                    </div>
+                    <input type="submit" class="submit-btn" value="Send Message" />
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+    <div id="footer">
+        <p>&copy; 2025 Fahad Bin Hussain. All Rights Reserved.</p>
+        <div id="page-info"></div>
+    </div>
+
+    <script type="text/javascript" src="script.js"></script>
+</body>
+</html>
