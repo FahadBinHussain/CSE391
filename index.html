@@ -140,6 +140,49 @@
         </div>
     </div>
 
+    <!-- Stopwatch Section -->
+    <div id="stopwatch-section">
+        <h2>Stopwatch (3-Second Intervals)</h2>
+        <div id="stopwatch-container">
+            <div id="stopwatch-display">
+                <span id="time-display">00:00</span>
+                <div id="time-info">
+                    <span id="seconds-count">0</span> seconds
+                </div>
+            </div>
+            <div id="stopwatch-controls">
+                <button id="start-btn" class="stopwatch-btn start-btn">Start</button>
+                <button id="stop-btn" class="stopwatch-btn stop-btn">Stop</button>
+                <button id="reset-btn" class="stopwatch-btn reset-btn">Reset</button>
+            </div>
+            <div id="stopwatch-status">
+                <span id="status-text">Ready to start</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Todo List Section -->
+    <div id="todo-section">
+        <h2>Todo List</h2>
+        <div id="todo-container">
+            <div id="todo-input-section">
+                <input type="text" id="todo-input" placeholder="Enter a new task..." maxlength="100">
+                <button id="add-task-btn" class="todo-btn add-btn">Add Task</button>
+            </div>
+            <div id="todo-stats">
+                <span id="total-tasks">0</span> total tasks | 
+                <span id="completed-tasks">0</span> completed | 
+                <span id="pending-tasks">0</span> pending
+            </div>
+            <div id="todo-list-container">
+                <ul id="todo-list"></ul>
+                <div id="empty-state" class="empty-state">
+                    <p>No tasks yet. Add your first task above!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="footer">
         <p>&copy; 2025 Fahad Bin Hussain. All Rights Reserved.</p>
         <div id="page-info"></div>

@@ -145,4 +145,332 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     console.log('Fortune Generator initialized successfully');
+
+    // Stopwatch Implementation
+    let stopwatchTime = 0; // Time in seconds (multiples of 3)
+    let stopwatchInterval = null;
+    let isRunning = false;
+    const MAX_TIME = 30; // Maximum time in seconds
+    const INCREMENT = 3; // Time increment in seconds
+
+    // Get stopwatch elements
+    const timeDisplay = document.getElementById('time-display');
+    const secondsCount = document.getElementById('seconds-count');
+    const statusText = document.getElementById('status-text');
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const stopwatchSection = document.getElementById('stopwatch-section');
+
+    // Function to format time display (MM:SS)
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    // Function to update stopwatch display
+    function updateStopwatchDisplay() {
+        timeDisplay.textContent = formatTime(stopwatchTime);
+        secondsCount.textContent = stopwatchTime;
+        console.log(`Stopwatch time updated: ${stopwatchTime} seconds`);
+    }
+
+    // Function to update button states
+    function updateButtonStates() {
+        if (stopwatchTime >= MAX_TIME) {
+            // Timer completed
+            startBtn.disabled = true;
+            stopBtn.disabled = true;
+            resetBtn.disabled = false;
+            statusText.textContent = 'Timer completed! (30 seconds reached)';
+            statusText.className = 'status-completed';
+            stopwatchSection.classList.add('stopwatch-completed');
+            showNotification('Stopwatch completed! 30 seconds reached.', 'success');
+        } else if (isRunning) {
+            // Timer running
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            resetBtn.disabled = false;
+            statusText.textContent = 'Stopwatch running...';
+            statusText.className = 'status-running';
+            stopwatchSection.classList.add('stopwatch-running');
+            stopwatchSection.classList.remove('stopwatch-completed');
+        } else {
+            // Timer stopped/paused
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            resetBtn.disabled = false;
+            if (stopwatchTime > 0) {
+                statusText.textContent = `Paused at ${stopwatchTime} seconds`;
+                statusText.className = 'status-stopped';
+            } else {
+                statusText.textContent = 'Ready to start';
+                statusText.className = '';
+            }
+            stopwatchSection.classList.remove('stopwatch-running', 'stopwatch-completed');
+        }
+    }
+
+    // Function to start stopwatch
+    function startStopwatch() {
+        if (stopwatchTime >= MAX_TIME) {
+            showNotification('Timer already completed. Please reset to start again.', 'warning');
+            return;
+        }
+
+        isRunning = true;
+        console.log('Stopwatch started');
+        showNotification('Stopwatch started', 'info');
+
+        stopwatchInterval = setInterval(() => {
+            stopwatchTime += INCREMENT;
+            updateStopwatchDisplay();
+
+            if (stopwatchTime >= MAX_TIME) {
+                stopStopwatch();
+                console.log('Stopwatch automatically stopped at 30 seconds');
+            }
+
+            updateButtonStates();
+        }, 3000); // Update every 3 seconds
+
+        updateButtonStates();
+    }
+
+    // Function to stop stopwatch
+    function stopStopwatch() {
+        if (!isRunning) {
+            showNotification('Stopwatch is not running', 'warning');
+            return;
+        }
+
+        isRunning = false;
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        console.log(`Stopwatch stopped at ${stopwatchTime} seconds`);
+        showNotification(`Stopwatch paused at ${stopwatchTime} seconds`, 'info');
+        updateButtonStates();
+    }
+
+    // Function to reset stopwatch
+    function resetStopwatch() {
+        isRunning = false;
+        if (stopwatchInterval) {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+        }
+        stopwatchTime = 0;
+        updateStopwatchDisplay();
+        updateButtonStates();
+        console.log('Stopwatch reset to 0');
+        showNotification('Stopwatch reset to 0', 'info');
+    }
+
+    // Add event listeners for stopwatch buttons
+    if (startBtn) {
+        startBtn.addEventListener('click', startStopwatch);
+    }
+
+    if (stopBtn) {
+        stopBtn.addEventListener('click', stopStopwatch);
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetStopwatch);
+    }
+
+    // Initialize stopwatch display
+    updateStopwatchDisplay();
+    updateButtonStates();
+
+    console.log('Stopwatch initialized successfully');
+
+    // Todo List Implementation
+    let todoList = [];
+    let todoIdCounter = 1;
+
+    // Get todo elements
+    const todoInput = document.getElementById('todo-input');
+    const addTaskBtn = document.getElementById('add-task-btn');
+    const todoListElement = document.getElementById('todo-list');
+    const emptyState = document.getElementById('empty-state');
+    const totalTasksSpan = document.getElementById('total-tasks');
+    const completedTasksSpan = document.getElementById('completed-tasks');
+    const pendingTasksSpan = document.getElementById('pending-tasks');
+
+    // Local Storage Functions
+    function saveTodosToStorage() {
+        localStorage.setItem('todoList', JSON.stringify(todoList));
+        localStorage.setItem('todoIdCounter', todoIdCounter.toString());
+        console.log('Todos saved to localStorage');
+    }
+
+    function loadTodosFromStorage() {
+        const savedTodos = localStorage.getItem('todoList');
+        const savedCounter = localStorage.getItem('todoIdCounter');
+        
+        if (savedTodos) {
+            todoList = JSON.parse(savedTodos);
+            console.log('Loaded todos from localStorage:', todoList);
+        }
+        
+        if (savedCounter) {
+            todoIdCounter = parseInt(savedCounter);
+        }
+        
+        renderTodoList();
+        updateStats();
+    }
+
+    // Function to update statistics
+    function updateStats() {
+        const total = todoList.length;
+        const completed = todoList.filter(todo => todo.completed).length;
+        const pending = total - completed;
+
+        totalTasksSpan.textContent = total;
+        completedTasksSpan.textContent = completed;
+        pendingTasksSpan.textContent = pending;
+
+        // Show/hide empty state
+        if (total === 0) {
+            emptyState.classList.remove('hidden');
+            todoListElement.classList.add('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+            todoListElement.classList.remove('hidden');
+        }
+    }
+
+    // Function to create todo item HTML
+    function createTodoItemHTML(todo) {
+        return `
+            <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
+                <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+                <span class="todo-text">${todo.text}</span>
+                <div class="todo-actions">
+                    <button class="delete-btn" title="Delete task">Delete</button>
+                </div>
+            </li>
+        `;
+    }
+
+    // Function to render the todo list
+    function renderTodoList() {
+        todoListElement.innerHTML = '';
+        
+        todoList.forEach(todo => {
+            todoListElement.innerHTML += createTodoItemHTML(todo);
+        });
+
+        // Add event listeners to new elements
+        attachTodoEventListeners();
+        updateStats();
+    }
+
+    // Function to attach event listeners to todo items
+    function attachTodoEventListeners() {
+        // Checkbox event listeners
+        const checkboxes = document.querySelectorAll('.todo-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const todoId = parseInt(this.closest('.todo-item').dataset.id);
+                toggleTodoComplete(todoId);
+            });
+        });
+
+        // Delete button event listeners
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const todoId = parseInt(this.closest('.todo-item').dataset.id);
+                deleteTodo(todoId);
+            });
+        });
+    }
+
+    // Function to add a new todo
+    function addTodo() {
+        const todoText = todoInput.value.trim();
+        
+        if (todoText === '') {
+            showNotification('Please enter a task', 'warning');
+            todoInput.focus();
+            return;
+        }
+
+        const newTodo = {
+            id: todoIdCounter++,
+            text: todoText,
+            completed: false,
+            createdAt: new Date().toISOString()
+        };
+
+        todoList.push(newTodo);
+        todoInput.value = '';
+        
+        renderTodoList();
+        saveTodosToStorage();
+        
+        console.log('New todo added:', newTodo);
+        showNotification('Task added successfully!', 'success');
+        todoInput.focus();
+    }
+
+    // Function to toggle todo completion
+    function toggleTodoComplete(todoId) {
+        const todo = todoList.find(t => t.id === todoId);
+        if (todo) {
+            todo.completed = !todo.completed;
+            renderTodoList();
+            saveTodosToStorage();
+            
+            const status = todo.completed ? 'completed' : 'pending';
+            console.log(`Todo ${todoId} marked as ${status}`);
+            showNotification(`Task marked as ${status}`, 'info');
+        }
+    }
+
+    // Function to delete a todo
+    function deleteTodo(todoId) {
+        const todoItem = document.querySelector(`[data-id="${todoId}"]`);
+        todoItem.classList.add('removing');
+        
+        setTimeout(() => {
+            todoList = todoList.filter(t => t.id !== todoId);
+            renderTodoList();
+            saveTodosToStorage();
+            
+            console.log(`Todo ${todoId} deleted`);
+            showNotification('Task deleted', 'info');
+        }, 300);
+    }
+
+    // Event listeners for todo functionality
+    if (addTaskBtn) {
+        addTaskBtn.addEventListener('click', addTodo);
+    }
+
+    if (todoInput) {
+        todoInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        todoInput.addEventListener('input', function() {
+            addTaskBtn.disabled = this.value.trim() === '';
+        });
+    }
+
+    // Initialize todo list
+    loadTodosFromStorage();
+    
+    // Set initial button state
+    if (addTaskBtn && todoInput) {
+        addTaskBtn.disabled = todoInput.value.trim() === '';
+    }
+
+    console.log('Todo List initialized successfully');
 });

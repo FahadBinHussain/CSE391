@@ -310,3 +310,450 @@ tbody tr:hover { background-color: #bdc3c7; color: #2c3e50; }
         max-width: none;
     }
 }
+
+/* Stopwatch Section Styles */
+#stopwatch-section {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: var(--section-bg-color);
+    margin: 2rem auto;
+    max-width: 600px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-out;
+}
+
+#stopwatch-section h2 {
+    color: var(--heading-color);
+    margin-bottom: 2rem;
+    font-size: 2em;
+}
+
+#stopwatch-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+#stopwatch-display {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+    min-width: 250px;
+}
+
+#time-display {
+    font-size: 4em;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#time-info {
+    font-size: 1.2em;
+    color: #bdc3c7;
+}
+
+#seconds-count {
+    color: #3498db;
+    font-weight: bold;
+    font-size: 1.3em;
+}
+
+#stopwatch-controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.stopwatch-btn {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 100px;
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+}
+
+.start-btn:hover {
+    background: linear-gradient(135deg, #229954, #27ae60);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.start-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stop-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.stop-btn:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.stop-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reset-btn {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+}
+
+.reset-btn:hover {
+    background: linear-gradient(135deg, #e67e22, #d35400);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#stopwatch-status {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--text-color);
+    padding: 1rem;
+    background-color: var(--bg-color);
+    border-radius: 10px;
+    border-left: 4px solid var(--heading-color);
+}
+
+#status-text {
+    transition: color 0.3s ease;
+}
+
+.status-running {
+    color: #27ae60 !important;
+}
+
+.status-stopped {
+    color: #e74c3c !important;
+}
+
+.status-completed {
+    color: #f39c12 !important;
+}
+
+/* Stopwatch animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.stopwatch-running #time-display {
+    animation: pulse 3s infinite;
+}
+
+.stopwatch-completed #stopwatch-display {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    animation: pulse 1s infinite;
+}
+
+/* Responsive design for stopwatch */
+@media (max-width: 768px) {
+    #stopwatch-section {
+        margin: 1rem;
+        padding: 1.5rem 1rem;
+    }
+    
+    #time-display {
+        font-size: 3em;
+    }
+    
+    #stopwatch-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stopwatch-btn {
+        width: 200px;
+    }
+    
+    #stopwatch-display {
+        min-width: 200px;
+        padding: 1.5rem;
+    }
+}
+
+/* Todo List Section Styles */
+#todo-section {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: var(--section-bg-color);
+    margin: 2rem auto;
+    max-width: 700px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-out;
+}
+
+#todo-section h2 {
+    color: var(--heading-color);
+    margin-bottom: 2rem;
+    font-size: 2em;
+}
+
+#todo-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#todo-input-section {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#todo-input {
+    flex: 1;
+    max-width: 400px;
+    padding: 12px 16px;
+    font-size: 1em;
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#todo-input:focus {
+    border-color: var(--heading-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.todo-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.add-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1f4e79);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.add-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#todo-stats {
+    font-size: 1em;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 10px;
+    border-left: 4px solid var(--heading-color);
+}
+
+#completed-tasks {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+#pending-tasks {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+#total-tasks {
+    color: var(--heading-color);
+    font-weight: bold;
+}
+
+#todo-list-container {
+    min-height: 200px;
+    position: relative;
+}
+
+#todo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    animation: slideInFromLeft 0.3s ease-out;
+}
+
+.todo-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item.completed {
+    background-color: #d5f4e6;
+    border-color: #27ae60;
+    opacity: 0.8;
+}
+
+[data-theme='dark'] .todo-item.completed {
+    background-color: #1e4d2b;
+    border-color: #27ae60;
+}
+
+.todo-checkbox {
+    margin-right: 1rem;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.todo-text {
+    flex: 1;
+    font-size: 1em;
+    color: var(--text-color);
+    word-wrap: break-word;
+    transition: all 0.3s ease;
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: #7f8c8d;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: scale(1.05);
+}
+
+.empty-state {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    padding: 2rem;
+    display: block;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Animations */
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+.todo-item.removing {
+    animation: fadeOut 0.3s ease-out;
+}
+
+/* Responsive design for todo list */
+@media (max-width: 768px) {
+    #todo-section {
+        margin: 1rem;
+        padding: 1.5rem 1rem;
+    }
+    
+    #todo-input-section {
+        flex-direction: column;
+    }
+    
+    #todo-input {
+        max-width: none;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .add-btn {
+        width: 100%;
+    }
+    
+    .todo-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .todo-checkbox {
+        margin-right: 0.5rem;
+    }
+    
+    .todo-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
