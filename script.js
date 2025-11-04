@@ -92,28 +92,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Theme configurations for fortune generator
     const themes = {
         red: {
-            fontColor: '#ffffff',
+            fontColor: '#dc3545',
             fontFamily: "'Georgia', serif",
             fontSize: '1.4em',
             backgroundColor: '#dc3545',
             borderColor: '#c82333'
         },
         green: {
-            fontColor: '#ffffff',
+            fontColor: '#28a745',
             fontFamily: "'Verdana', sans-serif",
             fontSize: '1.2em',
             backgroundColor: '#28a745',
             borderColor: '#1e7e34'
         },
         blue: {
-            fontColor: '#ffffff',
+            fontColor: '#007bff',
             fontFamily: "'Arial', sans-serif",
             fontSize: '1.3em',
             backgroundColor: '#007bff',
             borderColor: '#0056b3'
         },
         yellow: {
-            fontColor: '#212529',
+            fontColor: '#ffc107',
             fontFamily: "'Courier New', monospace",
             fontSize: '1.1em',
             backgroundColor: '#ffc107',
