@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
             startBtn.disabled = true;
             stopBtn.disabled = false;
             resetBtn.disabled = false;
-            statusText.textContent = 'Stopwatch running...';
+            statusText.textContent = `Stopwatch running... (Cycle ${cycleCounter + 1})`;
             statusText.className = 'status-running';
             stopwatchSection.classList.add('stopwatch-running');
             stopwatchSection.classList.remove('stopwatch-completed');
@@ -214,8 +214,8 @@ document.addEventListener('DOMContentLoaded', function() {
             startBtn.disabled = false;
             stopBtn.disabled = true;
             resetBtn.disabled = false;
-            if (stopwatchTime > 0) {
-                statusText.textContent = `Stopped at ${stopwatchTime} seconds. Completed ${cycleCounter} full cycles (30-second intervals)`;
+            if (stopwatchTime > 0 || cycleCounter > 0) {
+                statusText.textContent = `Stopped at ${stopwatchTime} seconds. Completed ${cycleCounter} full cycles`;
                 statusText.className = 'status-stopped';
             } else {
                 statusText.textContent = 'Ready to start';
@@ -233,14 +233,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         stopwatchInterval = setInterval(() => {
             stopwatchTime += 3; // Increment by 3 every second
-            updateStopwatchDisplay();
             
-            // Check for 30-second cycles
-            if (stopwatchTime % 30 === 0) {
-                cycleCounter = Math.floor(stopwatchTime / 30);
-                console.log(`Completed ${cycleCounter} full cycles`);
+            // Check if we've reached 30 seconds
+            if (stopwatchTime >= 30) {
+                cycleCounter++; // Increment cycle count
+                stopwatchTime = 0; // Reset timer to 0
+                console.log(`Completed cycle ${cycleCounter}! Timer reset to 0`);
+                showNotification(`Cycle ${cycleCounter} completed! Timer reset to 0`, 'success');
             }
-
+            
+            updateStopwatchDisplay();
             updateButtonStates();
         }, 1000); // Update every 1 second
 
@@ -258,10 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(stopwatchInterval);
         stopwatchInterval = null;
         
-        // Calculate final cycle count
-        cycleCounter = Math.floor(stopwatchTime / 30);
-        
-        console.log(`Stopwatch stopped and reset. Final time: ${stopwatchTime} seconds, Cycles: ${cycleCounter}`);
+        console.log(`Stopwatch stopped and reset. Final time: ${stopwatchTime} seconds, Completed cycles: ${cycleCounter}`);
         showNotification(`Stopwatch stopped at ${stopwatchTime} seconds with ${cycleCounter} completed cycles`, 'info');
         
         // Reset time immediately
@@ -279,10 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
             stopwatchInterval = null;
         }
         stopwatchTime = 0;
+        cycleCounter = 0;
         updateStopwatchDisplay();
         updateButtonStates();
-        console.log('Stopwatch reset to 0');
-        showNotification('Stopwatch reset to 0', 'info');
+        console.log('Stopwatch reset to 0, cycles reset to 0');
+        showNotification('Stopwatch and cycles reset to 0', 'info');
     }
 
     // Add event listeners for stopwatch buttons
