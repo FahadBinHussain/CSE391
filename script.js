@@ -89,58 +89,81 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification('Welcome! Your fortune has been revealed.', 'success');
     }
 
-    // Color and style arrays for randomization
-    const fontColors = ['#2c3e50', '#8e44ad', '#c0392b', '#d35400', '#27ae60', '#16a085'];
-    const backgroundColors = ['#f8f9fa', '#e8f5e8', '#fff3cd', '#f8d7da', '#d1ecf1', '#e2e3e5'];
-    const borderColors = ['#3498db', '#9b59b6', '#e74c3c', '#f39c12', '#2ecc71', '#1abc9c'];
-    const fontFamilies = [
-        { family: "'Georgia', serif", size: '1.3em' },
-        { family: "'Arial', sans-serif", size: '1.2em' },
-        { family: "'Times New Roman', serif", size: '1.4em' },
-        { family: "'Verdana', sans-serif", size: '1.1em' },
-        { family: "'Courier New', monospace", size: '1.2em' }
-    ];
+    // Theme configurations for fortune generator
+    const themes = {
+        red: {
+            fontColor: '#ffffff',
+            fontFamily: "'Georgia', serif",
+            fontSize: '1.4em',
+            backgroundColor: '#dc3545',
+            borderColor: '#c82333'
+        },
+        green: {
+            fontColor: '#ffffff',
+            fontFamily: "'Verdana', sans-serif",
+            fontSize: '1.2em',
+            backgroundColor: '#28a745',
+            borderColor: '#1e7e34'
+        },
+        blue: {
+            fontColor: '#ffffff',
+            fontFamily: "'Arial', sans-serif",
+            fontSize: '1.3em',
+            backgroundColor: '#007bff',
+            borderColor: '#0056b3'
+        },
+        yellow: {
+            fontColor: '#212529',
+            fontFamily: "'Courier New', monospace",
+            fontSize: '1.1em',
+            backgroundColor: '#ffc107',
+            borderColor: '#e0a800'
+        }
+    };
 
-    // Button event listeners
-    const colorBtn1 = document.getElementById('color-btn-1');
-    const colorBtn2 = document.getElementById('color-btn-2');
-    const colorBtn3 = document.getElementById('color-btn-3');
-    const colorBtn4 = document.getElementById('color-btn-4');
+    // Function to apply theme to fortune box
+    function applyTheme(themeName) {
+        const theme = themes[themeName];
+        if (!theme || !fortuneText || !fortuneBox) return;
 
-    if (colorBtn1) {
-        colorBtn1.addEventListener('click', function() {
-            const randomColor = fontColors[Math.floor(Math.random() * fontColors.length)];
-            fortuneText.style.color = randomColor;
-            console.log(`Font color changed to: ${randomColor}`);
-            showNotification(`Font color changed to ${randomColor}`, 'info');
+        // Apply all 5 properties at once
+        fortuneText.style.color = theme.fontColor;
+        fortuneText.style.fontFamily = theme.fontFamily;
+        fortuneText.style.fontSize = theme.fontSize;
+        fortuneBox.style.backgroundColor = theme.backgroundColor;
+        fortuneBox.style.borderColor = theme.borderColor;
+
+        console.log(`Applied ${themeName} theme to fortune generator`);
+        showNotification(`${themeName.charAt(0).toUpperCase() + themeName.slice(1)} theme applied!`, 'success');
+    }
+
+    // Button event listeners for themed fortune generator
+    const redThemeBtn = document.getElementById('red-theme-btn');
+    const greenThemeBtn = document.getElementById('green-theme-btn');
+    const blueThemeBtn = document.getElementById('blue-theme-btn');
+    const yellowThemeBtn = document.getElementById('yellow-theme-btn');
+
+    if (redThemeBtn) {
+        redThemeBtn.addEventListener('click', function() {
+            applyTheme('red');
         });
     }
 
-    if (colorBtn2) {
-        colorBtn2.addEventListener('click', function() {
-            const randomBgColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
-            fortuneBox.style.backgroundColor = randomBgColor;
-            console.log(`Background color changed to: ${randomBgColor}`);
-            showNotification(`Background color updated`, 'info');
+    if (greenThemeBtn) {
+        greenThemeBtn.addEventListener('click', function() {
+            applyTheme('green');
         });
     }
 
-    if (colorBtn3) {
-        colorBtn3.addEventListener('click', function() {
-            const randomBorderColor = borderColors[Math.floor(Math.random() * borderColors.length)];
-            fortuneBox.style.borderColor = randomBorderColor;
-            console.log(`Border color changed to: ${randomBorderColor}`);
-            showNotification(`Border color changed`, 'info');
+    if (blueThemeBtn) {
+        blueThemeBtn.addEventListener('click', function() {
+            applyTheme('blue');
         });
     }
 
-    if (colorBtn4) {
-        colorBtn4.addEventListener('click', function() {
-            const randomFont = fontFamilies[Math.floor(Math.random() * fontFamilies.length)];
-            fortuneText.style.fontFamily = randomFont.family;
-            fortuneText.style.fontSize = randomFont.size;
-            console.log(`Font changed to: ${randomFont.family}, size: ${randomFont.size}`);
-            showNotification(`Font style updated`, 'info');
+    if (yellowThemeBtn) {
+        yellowThemeBtn.addEventListener('click', function() {
+            applyTheme('yellow');
         });
     }
 
