@@ -95,29 +95,29 @@ document.addEventListener('DOMContentLoaded', function() {
             fontColor: '#dc3545',
             fontFamily: "'Georgia', serif",
             fontSize: '1.4em',
-            backgroundColor: '#dc3545',
-            borderColor: '#c82333'
+            backgroundColor: 'rgba(220, 53, 69, 0.2)',
+            borderColor: '#dc3545'
         },
         green: {
             fontColor: '#28a745',
             fontFamily: "'Verdana', sans-serif",
             fontSize: '1.2em',
-            backgroundColor: '#28a745',
-            borderColor: '#1e7e34'
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            borderColor: '#28a745'
         },
         blue: {
             fontColor: '#007bff',
             fontFamily: "'Arial', sans-serif",
             fontSize: '1.3em',
-            backgroundColor: '#007bff',
-            borderColor: '#0056b3'
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+            borderColor: '#007bff'
         },
         yellow: {
             fontColor: '#ffc107',
             fontFamily: "'Courier New', monospace",
             fontSize: '1.1em',
-            backgroundColor: '#ffc107',
-            borderColor: '#e0a800'
+            backgroundColor: 'rgba(255, 193, 7, 0.2)',
+            borderColor: '#ffc107'
         }
     };
 
