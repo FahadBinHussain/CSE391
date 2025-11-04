@@ -465,6 +465,47 @@ tr:hover {
     box-shadow: var(--shadow-large);
 }
 
+/* Individual fortune button color themes */
+.red-btn {
+    background: #dc3545 !important;
+    color: #ffffff !important;
+}
+
+.red-btn:hover {
+    background: #c82333 !important;
+    color: #ffffff !important;
+}
+
+.green-btn {
+    background: #28a745 !important;
+    color: #ffffff !important;
+}
+
+.green-btn:hover {
+    background: #1e7e34 !important;
+    color: #ffffff !important;
+}
+
+.blue-btn {
+    background: #007bff !important;
+    color: #ffffff !important;
+}
+
+.blue-btn:hover {
+    background: #0056b3 !important;
+    color: #ffffff !important;
+}
+
+.yellow-btn {
+    background: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.yellow-btn:hover {
+    background: #e0a800 !important;
+    color: #212529 !important;
+}
+
 /* Stopwatch Section Styles */
 #stopwatch-section {
     text-align: center;
