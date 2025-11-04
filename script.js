@@ -170,11 +170,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Fortune Generator initialized successfully');
 
     // Stopwatch Implementation
-    let stopwatchTime = 0; // Time in seconds (multiples of 3)
+    let stopwatchTime = 0; // Time in seconds
     let stopwatchInterval = null;
     let isRunning = false;
-    const MAX_TIME = 30; // Maximum time in seconds
-    const INCREMENT = 3; // Time increment in seconds
+    let cycleCounter = 0; // Counts 30-second cycles
 
     // Get stopwatch elements
     const timeDisplay = document.getElementById('time-display');
@@ -201,16 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to update button states
     function updateButtonStates() {
-        if (stopwatchTime >= MAX_TIME) {
-            // Timer completed
-            startBtn.disabled = true;
-            stopBtn.disabled = true;
-            resetBtn.disabled = false;
-            statusText.textContent = 'Timer completed! (30 seconds reached)';
-            statusText.className = 'status-completed';
-            stopwatchSection.classList.add('stopwatch-completed');
-            showNotification('Stopwatch completed! 30 seconds reached.', 'success');
-        } else if (isRunning) {
+        if (isRunning) {
             // Timer running
             startBtn.disabled = true;
             stopBtn.disabled = false;
@@ -225,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stopBtn.disabled = true;
             resetBtn.disabled = false;
             if (stopwatchTime > 0) {
-                statusText.textContent = `Paused at ${stopwatchTime} seconds`;
+                statusText.textContent = `Stopped at ${stopwatchTime} seconds. Completed ${cycleCounter} full cycles (30-second intervals)`;
                 statusText.className = 'status-stopped';
             } else {
                 statusText.textContent = 'Ready to start';
@@ -237,31 +227,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to start stopwatch
     function startStopwatch() {
-        if (stopwatchTime >= MAX_TIME) {
-            showNotification('Timer already completed. Please reset to start again.', 'warning');
-            return;
-        }
-
         isRunning = true;
         console.log('Stopwatch started');
         showNotification('Stopwatch started', 'info');
 
         stopwatchInterval = setInterval(() => {
-            stopwatchTime += INCREMENT;
+            stopwatchTime += 3; // Increment by 3 every second
             updateStopwatchDisplay();
-
-            if (stopwatchTime >= MAX_TIME) {
-                stopStopwatch();
-                console.log('Stopwatch automatically stopped at 30 seconds');
+            
+            // Check for 30-second cycles
+            if (stopwatchTime % 30 === 0) {
+                cycleCounter = Math.floor(stopwatchTime / 30);
+                console.log(`Completed ${cycleCounter} full cycles`);
             }
 
             updateButtonStates();
-        }, 3000); // Update every 3 seconds
+        }, 1000); // Update every 1 second
 
         updateButtonStates();
     }
 
-    // Function to stop stopwatch
+    // Function to stop and reset stopwatch
     function stopStopwatch() {
         if (!isRunning) {
             showNotification('Stopwatch is not running', 'warning');
@@ -271,8 +257,17 @@ document.addEventListener('DOMContentLoaded', function() {
         isRunning = false;
         clearInterval(stopwatchInterval);
         stopwatchInterval = null;
-        console.log(`Stopwatch stopped at ${stopwatchTime} seconds`);
-        showNotification(`Stopwatch paused at ${stopwatchTime} seconds`, 'info');
+        
+        // Calculate final cycle count
+        cycleCounter = Math.floor(stopwatchTime / 30);
+        
+        console.log(`Stopwatch stopped and reset. Final time: ${stopwatchTime} seconds, Cycles: ${cycleCounter}`);
+        showNotification(`Stopwatch stopped at ${stopwatchTime} seconds with ${cycleCounter} completed cycles`, 'info');
+        
+        // Reset time immediately
+        stopwatchTime = 0;
+        cycleCounter = 0;
+        updateStopwatchDisplay();
         updateButtonStates();
     }
 
@@ -371,8 +366,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return `
             <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
                 <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
-                <span class="todo-text">${todo.text}</span>
+                <span class="todo-text" data-id="${todo.id}">${todo.text}</span>
+                <input type="text" class="todo-edit-input" value="${todo.text}" style="display: none;" maxlength="100">
                 <div class="todo-actions">
+                    <button class="edit-btn" title="Edit task">Edit</button>
+                    <button class="save-btn" title="Save changes" style="display: none;">Save</button>
+                    <button class="cancel-btn" title="Cancel edit" style="display: none;">Cancel</button>
                     <button class="delete-btn" title="Delete task">Delete</button>
                 </div>
             </li>
@@ -403,12 +402,54 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+        // Edit button event listeners
+        const editButtons = document.querySelectorAll('.edit-btn');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const todoId = parseInt(this.closest('.todo-item').dataset.id);
+                enterEditMode(todoId);
+            });
+        });
+
+        // Save button event listeners
+        const saveButtons = document.querySelectorAll('.save-btn');
+        saveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const todoId = parseInt(this.closest('.todo-item').dataset.id);
+                saveEdit(todoId);
+            });
+        });
+
+        // Cancel button event listeners
+        const cancelButtons = document.querySelectorAll('.cancel-btn');
+        cancelButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const todoId = parseInt(this.closest('.todo-item').dataset.id);
+                cancelEdit(todoId);
+            });
+        });
+
         // Delete button event listeners
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const todoId = parseInt(this.closest('.todo-item').dataset.id);
                 deleteTodo(todoId);
+            });
+        });
+
+        // Edit input event listeners
+        const editInputs = document.querySelectorAll('.todo-edit-input');
+        editInputs.forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const todoId = parseInt(this.closest('.todo-item').dataset.id);
+                    saveEdit(todoId);
+                }
+                if (e.key === 'Escape') {
+                    const todoId = parseInt(this.closest('.todo-item').dataset.id);
+                    cancelEdit(todoId);
+                }
             });
         });
     }
@@ -468,6 +509,73 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`Todo ${todoId} deleted`);
             showNotification('Task deleted', 'info');
         }, 300);
+    }
+
+    // Function to enter edit mode for a todo
+    function enterEditMode(todoId) {
+        const todoItem = document.querySelector(`[data-id="${todoId}"]`);
+        const todoText = todoItem.querySelector('.todo-text');
+        const editInput = todoItem.querySelector('.todo-edit-input');
+        const editBtn = todoItem.querySelector('.edit-btn');
+        const saveBtn = todoItem.querySelector('.save-btn');
+        const cancelBtn = todoItem.querySelector('.cancel-btn');
+        const deleteBtn = todoItem.querySelector('.delete-btn');
+
+        // Hide text and edit button, show input and save/cancel buttons
+        todoText.style.display = 'none';
+        editBtn.style.display = 'none';
+        deleteBtn.style.display = 'none';
+        editInput.style.display = 'inline-block';
+        saveBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+
+        // Focus the input and select all text
+        editInput.focus();
+        editInput.select();
+
+        console.log(`Entered edit mode for todo ${todoId}`);
+    }
+
+    // Function to save edit changes
+    function saveEdit(todoId) {
+        const todoItem = document.querySelector(`[data-id="${todoId}"]`);
+        const editInput = todoItem.querySelector('.todo-edit-input');
+        const newText = editInput.value.trim();
+
+        if (newText === '') {
+            showNotification('Task cannot be empty', 'warning');
+            editInput.focus();
+            return;
+        }
+
+        // Update the todo in the list
+        const todo = todoList.find(t => t.id === todoId);
+        if (todo) {
+            todo.text = newText;
+            renderTodoList();
+            saveTodosToStorage();
+            
+            console.log(`Todo ${todoId} updated to: ${newText}`);
+            showNotification('Task updated successfully!', 'success');
+        }
+    }
+
+    // Function to cancel edit mode
+    function cancelEdit(todoId) {
+        const todoItem = document.querySelector(`[data-id="${todoId}"]`);
+        const todo = todoList.find(t => t.id === todoId);
+        
+        if (todo) {
+            // Reset the input value to original text
+            const editInput = todoItem.querySelector('.todo-edit-input');
+            editInput.value = todo.text;
+            
+            // Re-render to exit edit mode
+            renderTodoList();
+            
+            console.log(`Cancelled edit for todo ${todoId}`);
+            showNotification('Edit cancelled', 'info');
+        }
     }
 
     // Event listeners for todo functionality
