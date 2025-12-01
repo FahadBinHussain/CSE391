@@ -290,33 +290,54 @@ function closeEditModal() {
 // Handle edit form submission
 document.getElementById('editForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    console.log('📝 Edit form submitted');
     
     const formData = new FormData(e.target);
-    const appointmentId = parseInt(formData.get('appointment_id'));
     
-    // Find and update appointment
-    const appointmentIndex = appointments.findIndex(apt => apt.id === appointmentId);
-    if (appointmentIndex === -1) return;
+    // Log form data
+    console.log('📋 Edit form data:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`  ${key}: ${value}`);
+    }
     
-    // Update appointment data
-    appointments[appointmentIndex] = {
-        ...appointments[appointmentIndex],
-        appointment_date: formData.get('appointment_date'),
-        mechanic_id: parseInt(formData.get('mechanic_id')),
-        mechanic_name: getMechanicName(formData.get('mechanic_id')),
-        status: formData.get('status')
+    // Send update to server
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'simple_update.php', true);
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            console.log(`📡 Update response: Status ${xhr.status}`);
+            console.log('📄 Response text:', xhr.responseText);
+            
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    console.log('📊 Parsed update response:', response);
+                    
+                    if (response.success) {
+                        console.log('✅ Appointment updated successfully');
+                        
+                        // Refresh appointments from server
+                        loadAppointments();
+                        closeEditModal();
+                        showToast('Appointment updated successfully', 'success');
+                    } else {
+                        console.log('❌ Update failed:', response.error);
+                        showToast('Update failed: ' + response.error, 'error');
+                    }
+                } catch (e) {
+                    console.error('❌ JSON parsing error:', e);
+                    showToast('Server response error', 'error');
+                }
+            } else {
+                console.error('❌ HTTP error:', xhr.status);
+                showToast('Server error: HTTP ' + xhr.status, 'error');
+            }
+        }
     };
     
-    // In real application, this would be an AJAX call to update_appointment.php
-    console.log('Updating appointment:', appointments[appointmentIndex]);
-    
-    // Refresh display
-    displayAppointments(appointments);
-    updateDashboardStats();
-    closeEditModal();
-    
-    // Show success message
-    showToast('Appointment updated successfully', 'success');
+    console.log('📤 Sending update request...');
+    xhr.send(formData);
 });
 
 // Delete appointment
@@ -335,19 +356,47 @@ function closeDeleteModal() {
 function confirmDelete() {
     if (!currentDeleteId) return;
     
-    // Remove appointment from array
-    appointments = appointments.filter(apt => apt.id !== currentDeleteId);
+    console.log('🗑️ Deleting appointment ID:', currentDeleteId);
     
-    // In real application, this would be an AJAX call to delete_appointment.php
-    console.log('Deleting appointment ID:', currentDeleteId);
+    // Send delete request to server
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'simple_delete.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     
-    // Refresh display
-    displayAppointments(appointments);
-    updateDashboardStats();
-    closeDeleteModal();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            console.log(`📡 Delete response: Status ${xhr.status}`);
+            console.log('📄 Response text:', xhr.responseText);
+            
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    console.log('📊 Parsed delete response:', response);
+                    
+                    if (response.success) {
+                        console.log('✅ Appointment deleted successfully');
+                        
+                        // Refresh appointments from server
+                        loadAppointments();
+                        closeDeleteModal();
+                        showToast('Appointment deleted successfully', 'success');
+                    } else {
+                        console.log('❌ Delete failed:', response.error);
+                        showToast('Delete failed: ' + response.error, 'error');
+                    }
+                } catch (e) {
+                    console.error('❌ JSON parsing error:', e);
+                    showToast('Server response error', 'error');
+                }
+            } else {
+                console.error('❌ HTTP error:', xhr.status);
+                showToast('Server error: HTTP ' + xhr.status, 'error');
+            }
+        }
+    };
     
-    // Show success message
-    showToast('Appointment deleted successfully', 'success');
+    console.log('📤 Sending delete request...');
+    xhr.send('appointment_id=' + currentDeleteId);
 }
 
 // Get mechanic name by ID

@@ -11,9 +11,22 @@ const mechanics = [
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Appointment page JavaScript loaded!');
+    
+    // Update debug status
+    const statusElement = document.getElementById('form-status');
+    if (statusElement) {
+        statusElement.textContent = 'JavaScript loaded! Setting up form...';
+        statusElement.style.color = 'green';
+    }
+    
     loadMechanics();
     setMinDate();
     setupFormValidation();
+    
+    if (statusElement) {
+        statusElement.textContent = 'Form ready! Using ultra_simple.php for bookings.';
+    }
 });
 
 // Load mechanics availability display
@@ -227,10 +240,24 @@ function getErrorId(fieldName) {
 // Handle form submission
 function handleFormSubmit(e) {
     e.preventDefault();
+    console.log('📝 Form submitted!');
+    
+    // Update debug status
+    const statusElement = document.getElementById('form-status');
+    if (statusElement) {
+        statusElement.textContent = 'Form submitted! Validating...';
+        statusElement.style.color = 'orange';
+    }
     
     const form = e.target;
     const formData = new FormData(form);
     let isFormValid = true;
+    
+    // Log form data
+    console.log('📋 Form data:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`  ${key}: ${value}`);
+    }
     
     // Validate all fields
     const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
@@ -241,25 +268,45 @@ function handleFormSubmit(e) {
     });
     
     if (!isFormValid) {
+        console.log('❌ Form validation failed');
+        if (statusElement) {
+            statusElement.textContent = 'Validation failed - check form errors';
+            statusElement.style.color = 'red';
+        }
         showMessage('Please correct the errors above', 'error');
         return;
+    }
+    
+    console.log('✅ Form validation passed');
+    if (statusElement) {
+        statusElement.textContent = 'Validation passed! Sending to server...';
+        statusElement.style.color = 'blue';
     }
     
     // Check for duplicate appointments (client-side check)
     const appointmentDate = formData.get('appointment_date');
     const mechanicId = formData.get('mechanic_id');
     
-    // In a real application, this would be an AJAX call to the server
+    // Submit to server
     submitAppointment(formData);
 }
 
 // Submit appointment to server
 function submitAppointment(formData) {
+    console.log('📤 Submitting appointment to ultra_simple.php...');
+    
+    const statusElement = document.getElementById('form-status');
+    
     // Show loading state
     const submitBtn = document.querySelector('.submit-btn');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Booking...';
     submitBtn.disabled = true;
+    
+    if (statusElement) {
+        statusElement.textContent = 'Sending request to ultra_simple.php...';
+        statusElement.style.color = 'blue';
+    }
     
     // Create XMLHttpRequest
     const xhr = new XMLHttpRequest();
@@ -276,6 +323,13 @@ function submitAppointment(formData) {
                     const response = JSON.parse(xhr.responseText);
                     
                     if (response.success) {
+                        console.log('🎉 Appointment booked successfully!', response);
+                        
+                        if (statusElement) {
+                            statusElement.textContent = `✅ Success! Appointment ID: ${response.appointment_id}`;
+                            statusElement.style.color = 'green';
+                        }
+                        
                         showMessage('Appointment booked successfully! Appointment ID: ' + response.appointment_id, 'success');
                         document.getElementById('appointmentForm').reset();
                         setMinDate();
@@ -288,6 +342,13 @@ function submitAppointment(formData) {
                             loadMechanics(); // Refresh mechanics display
                         }
                     } else {
+                        console.log('❌ Booking failed:', response);
+                        
+                        if (statusElement) {
+                            statusElement.textContent = `❌ Booking failed: ${response.errors ? response.errors[0] : 'Unknown error'}`;
+                            statusElement.style.color = 'red';
+                        }
+                        
                         let errorMsg = 'Booking failed: ';
                         if (response.errors && response.errors.length > 0) {
                             errorMsg += response.errors.join(', ');
