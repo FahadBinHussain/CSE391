@@ -58,6 +58,24 @@ const sampleAppointments = [
 
 // Initialize admin panel
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Admin panel JavaScript loaded!');
+    
+    // Test if functions are accessible
+    console.log('🧪 Testing function accessibility:');
+    console.log('editAppointment function:', typeof window.editAppointment);
+    console.log('deleteAppointment function:', typeof window.deleteAppointment);
+    
+    // Make functions global (in case they're not accessible)
+    window.editAppointment = editAppointment;
+    window.deleteAppointment = deleteAppointment;
+    console.log('✅ Functions made globally accessible');
+    
+    // Update debug status
+    const debugStatus = document.getElementById('debug-status');
+    if (debugStatus) {
+        debugStatus.textContent = 'JavaScript loaded! Functions accessible.';
+    }
+    
     loadAppointments();
     populateMechanicFilters();
     updateDashboardStats();
@@ -153,6 +171,8 @@ function createAppointmentRow(appointment) {
     const statusClass = `status-${appointment.status.replace('_', '-')}`;
     const formattedDate = formatDate(appointment.appointment_date);
     
+    console.log('🔨 Creating row for appointment:', appointment.id, appointment.client_name);
+    
     row.innerHTML = `
         <td>#${appointment.id}</td>
         <td>${appointment.client_name}</td>
@@ -162,10 +182,32 @@ function createAppointmentRow(appointment) {
         <td>${appointment.mechanic_name}</td>
         <td><span class="status-badge ${statusClass}">${formatStatus(appointment.status)}</span></td>
         <td>
-            <button class="action-btn edit-btn" onclick="editAppointment(${appointment.id})">Edit</button>
-            <button class="action-btn delete-btn" onclick="deleteAppointment(${appointment.id})">Delete</button>
+            <button class="action-btn edit-btn" data-id="${appointment.id}">Edit</button>
+            <button class="action-btn delete-btn" data-id="${appointment.id}">Delete</button>
         </td>
     `;
+    
+    // Add event listeners to the buttons
+    const editBtn = row.querySelector('.edit-btn');
+    const deleteBtn = row.querySelector('.delete-btn');
+    
+    if (editBtn) {
+        editBtn.addEventListener('click', function() {
+            console.log('🔧 Edit button clicked via event listener for ID:', appointment.id);
+            editAppointment(appointment.id);
+        });
+        console.log('✅ Edit event listener added for ID:', appointment.id);
+    }
+    
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+            console.log('🗑️ Delete button clicked via event listener for ID:', appointment.id);
+            deleteAppointment(appointment.id);
+        });
+        console.log('✅ Delete event listener added for ID:', appointment.id);
+    }
+    
+    console.log('✅ Row created with event listeners for appointment ID:', appointment.id);
     
     return row;
 }
@@ -263,9 +305,16 @@ function clearFilters() {
 
 // Edit appointment
 function editAppointment(appointmentId) {
-    const appointment = appointments.find(apt => apt.id === appointmentId);
-    if (!appointment) return;
+    console.log('🔧 Edit button clicked for appointment ID:', appointmentId);
     
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    if (!appointment) {
+        console.error('❌ Appointment not found for ID:', appointmentId);
+        console.log('📋 Available appointments:', appointments);
+        return;
+    }
+    
+    console.log('📄 Found appointment:', appointment);
     currentEditId = appointmentId;
     
     // Populate edit form
@@ -481,6 +530,22 @@ window.addEventListener('click', function(e) {
         closeDeleteModal();
     }
 });
+
+// Test function for debugging
+function testEditFunction() {
+    console.log('🧪 Test edit function called');
+    if (appointments.length > 0) {
+        const firstId = appointments[0].id;
+        console.log('🔧 Testing edit with ID:', firstId);
+        editAppointment(firstId);
+    } else {
+        console.log('❌ No appointments to test with');
+        alert('No appointments loaded to test with');
+    }
+}
+
+// Make test function global
+window.testEditFunction = testEditFunction;
 
 // Export functions for potential use
 window.AdminPanel = {
