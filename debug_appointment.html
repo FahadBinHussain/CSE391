@@ -153,16 +153,13 @@
             xhr.send();
         }
         
-        // Initialize debug mode
         document.addEventListener('DOMContentLoaded', function() {
             addDebugLog('Debug mode initialized');
             
-            // Set tomorrow's date as default
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             document.getElementById('appointmentDate').value = tomorrow.toISOString().split('T')[0];
             
-            // Setup form submission with detailed logging
             const form = document.getElementById('appointmentForm');
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -171,7 +168,6 @@
                 
                 const formData = new FormData(form);
                 
-                // Log form data
                 addDebugLog('Form data:');
                 for (let [key, value] of formData.entries()) {
                     addDebugLog(`  ${key}: ${value}`);

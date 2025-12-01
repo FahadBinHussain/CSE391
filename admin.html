@@ -23,7 +23,6 @@
             <section class="admin-section">
                 <h2>Appointment Management</h2>
                 
-                <!-- Statistics Dashboard -->
                 <div class="dashboard-stats">
                     <div class="stat-card">
                         <h3>Total Appointments</h3>
@@ -39,7 +38,6 @@
                     </div>
                 </div>
 
-                <!-- Filter Controls -->
                 <div class="filter-controls">
                     <div class="filter-group">
                         <label for="filterDate">Filter by Date:</label>
@@ -49,13 +47,11 @@
                         <label for="filterMechanic">Filter by Mechanic:</label>
                         <select id="filterMechanic" onchange="filterAppointments()">
                             <option value="">All Mechanics</option>
-                            <!-- Options populated by JavaScript -->
                         </select>
                     </div>
                     <button onclick="clearFilters()" class="clear-filters-btn">Clear Filters</button>
                 </div>
 
-                <!-- Appointments Table -->
                 <div class="table-container">
                     <table id="appointmentsTable">
                         <thead>
@@ -71,12 +67,10 @@
                             </tr>
                         </thead>
                         <tbody id="appointmentsBody">
-                            <!-- Appointments will be loaded here -->
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Edit Appointment Modal -->
                 <div id="editModal" class="modal">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -109,7 +103,6 @@
                             <div class="form-group">
                                 <label for="editMechanic">Mechanic:</label>
                                 <select id="editMechanic" name="mechanic_id" required>
-                                    <!-- Options populated by JavaScript -->
                                 </select>
                             </div>
 
@@ -131,7 +124,6 @@
                     </div>
                 </div>
 
-                <!-- Delete Confirmation Modal -->
                 <div id="deleteModal" class="modal">
                     <div class="modal-content">
                         <div class="modal-header">

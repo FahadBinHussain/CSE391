@@ -1,10 +1,7 @@
-// Car Workshop Admin Panel JavaScript
-
 let appointments = [];
 let currentEditId = null;
 let currentDeleteId = null;
 
-// Sample mechanics data (same as in appointment.js)
 const mechanics = [
     { id: 1, name: "John Smith", specialization: "Engine Specialist" },
     { id: 2, name: "Sarah Johnson", specialization: "Transmission Expert" },
@@ -13,7 +10,6 @@ const mechanics = [
     { id: 5, name: "David Lee", specialization: "General Mechanic" }
 ];
 
-// Sample appointments data (in real app, this comes from database)
 const sampleAppointments = [
     {
         id: 1,
@@ -56,16 +52,13 @@ const sampleAppointments = [
     }
 ];
 
-// Initialize admin panel
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Admin panel JavaScript loaded!');
     
-    // Test if functions are accessible
     console.log('🧪 Testing function accessibility:');
     console.log('editAppointment function:', typeof window.editAppointment);
     console.log('deleteAppointment function:', typeof window.deleteAppointment);
     
-    // Make functions global (in case they're not accessible)
     window.editAppointment = editAppointment;
     window.deleteAppointment = deleteAppointment;
     console.log('✅ Functions made globally accessible');
@@ -75,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDashboardStats();
 });
 
-// Load appointments from server
 function loadAppointments() {
     console.log('🔄 Loading appointments from server...');
     
@@ -101,7 +93,6 @@ function loadAppointments() {
                         
                         displayAppointments(appointments);
                         
-                        // Update dashboard stats
                         if (response.stats) {
                             console.log('📈 Updating stats:', response.stats);
                             updateDashboardStatsFromServer(response.stats);
@@ -134,7 +125,6 @@ function loadAppointments() {
     xhr.send();
 }
 
-// Display appointments in table
 function displayAppointments(appointmentsToShow) {
     const tbody = document.getElementById('appointmentsBody');
     if (!tbody) return;
@@ -158,7 +148,6 @@ function displayAppointments(appointmentsToShow) {
     });
 }
 
-// Create appointment table row
 function createAppointmentRow(appointment) {
     const row = document.createElement('tr');
     
@@ -181,7 +170,6 @@ function createAppointmentRow(appointment) {
         </td>
     `;
     
-    // Add event listeners to the buttons
     const editBtn = row.querySelector('.edit-btn');
     const deleteBtn = row.querySelector('.delete-btn');
     
@@ -206,7 +194,6 @@ function createAppointmentRow(appointment) {
     return row;
 }
 
-// Populate mechanic filter dropdown
 function populateMechanicFilters() {
     const filterSelect = document.getElementById('filterMechanic');
     const editSelect = document.getElementById('editMechanic');
@@ -214,7 +201,6 @@ function populateMechanicFilters() {
     const selects = [filterSelect, editSelect].filter(select => select);
     
     selects.forEach(select => {
-        // Keep existing options if any
         const existingOptions = select.innerHTML;
         
         mechanics.forEach(mechanic => {
@@ -226,7 +212,6 @@ function populateMechanicFilters() {
     });
 }
 
-// Update dashboard statistics
 function updateDashboardStats() {
     const totalElement = document.getElementById('totalAppointments');
     const todayElement = document.getElementById('todayAppointments');
@@ -243,7 +228,6 @@ function updateDashboardStats() {
     }
     
     if (availableElement) {
-        // Calculate available slots (5 mechanics × 4 slots - booked appointments for today)
         const today = new Date().toISOString().split('T')[0];
         const todayBooked = appointments.filter(apt => 
             apt.appointment_date === today && apt.status !== 'cancelled'
@@ -253,7 +237,6 @@ function updateDashboardStats() {
     }
 }
 
-// Update stats from server response
 function updateDashboardStatsFromServer(stats) {
     const totalElement = document.getElementById('totalAppointments');
     const todayElement = document.getElementById('todayAppointments');
@@ -272,7 +255,6 @@ function updateDashboardStatsFromServer(stats) {
     }
 }
 
-// Filter appointments
 function filterAppointments() {
     const dateFilter = document.getElementById('filterDate').value;
     const mechanicFilter = document.getElementById('filterMechanic').value;
@@ -290,14 +272,12 @@ function filterAppointments() {
     displayAppointments(filtered);
 }
 
-// Clear filters
 function clearFilters() {
     document.getElementById('filterDate').value = '';
     document.getElementById('filterMechanic').value = '';
     displayAppointments(appointments);
 }
 
-// Edit appointment
 function editAppointment(appointmentId) {
     console.log('🔧 Edit button clicked for appointment ID:', appointmentId);
     
@@ -311,7 +291,6 @@ function editAppointment(appointmentId) {
     console.log('📄 Found appointment:', appointment);
     currentEditId = appointmentId;
     
-    // Populate edit form
     document.getElementById('editAppointmentId').value = appointment.id;
     document.getElementById('editClientName').value = appointment.client_name;
     document.getElementById('editPhone').value = appointment.phone;
@@ -320,30 +299,25 @@ function editAppointment(appointmentId) {
     document.getElementById('editMechanic').value = appointment.mechanic_id;
     document.getElementById('editStatus').value = appointment.status;
     
-    // Show modal
     document.getElementById('editModal').style.display = 'block';
 }
 
-// Close edit modal
 function closeEditModal() {
     document.getElementById('editModal').style.display = 'none';
     currentEditId = null;
 }
 
-// Handle edit form submission
 document.getElementById('editForm').addEventListener('submit', function(e) {
     e.preventDefault();
     console.log('📝 Edit form submitted');
     
     const formData = new FormData(e.target);
     
-    // Log form data
     console.log('📋 Edit form data:');
     for (let [key, value] of formData.entries()) {
         console.log(`  ${key}: ${value}`);
     }
     
-    // Send update to server
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'simple_update.php', true);
     
@@ -383,25 +357,21 @@ document.getElementById('editForm').addEventListener('submit', function(e) {
     xhr.send(formData);
 });
 
-// Delete appointment
 function deleteAppointment(appointmentId) {
     currentDeleteId = appointmentId;
     document.getElementById('deleteModal').style.display = 'block';
 }
 
-// Close delete modal
 function closeDeleteModal() {
     document.getElementById('deleteModal').style.display = 'none';
     currentDeleteId = null;
 }
 
-// Confirm delete
 function confirmDelete() {
     if (!currentDeleteId) return;
     
     console.log('🗑️ Deleting appointment ID:', currentDeleteId);
     
-    // Send delete request to server
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'simple_delete.php', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -419,7 +389,6 @@ function confirmDelete() {
                     if (response.success) {
                         console.log('✅ Appointment deleted successfully');
                         
-                        // Refresh appointments from server
                         loadAppointments();
                         closeDeleteModal();
                         showToast('Appointment deleted successfully', 'success');
@@ -442,13 +411,11 @@ function confirmDelete() {
     xhr.send('appointment_id=' + currentDeleteId);
 }
 
-// Get mechanic name by ID
 function getMechanicName(mechanicId) {
     const mechanic = mechanics.find(m => m.id == mechanicId);
     return mechanic ? mechanic.name : 'Unknown';
 }
 
-// Format status for display
 function formatStatus(status) {
     const statusMap = {
         'scheduled': 'Scheduled',
@@ -460,7 +427,6 @@ function formatStatus(status) {
     return statusMap[status] || status;
 }
 
-// Format date for display
 function formatDate(dateString) {
     const options = { 
         year: 'numeric', 
@@ -470,14 +436,11 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
-// Show toast notification
 function showToast(message, type) {
-    // Create toast element
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
     
-    // Add styles
     Object.assign(toast.style, {
         position: 'fixed',
         top: '20px',
@@ -492,15 +455,12 @@ function showToast(message, type) {
         transition: 'transform 0.3s ease'
     });
     
-    // Add to DOM
     document.body.appendChild(toast);
     
-    // Animate in
     setTimeout(() => {
         toast.style.transform = 'translateX(0)';
     }, 100);
     
-    // Remove after 3 seconds
     setTimeout(() => {
         toast.style.transform = 'translateX(400px)';
         setTimeout(() => {
@@ -511,7 +471,6 @@ function showToast(message, type) {
     }, 3000);
 }
 
-// Close modals when clicking outside
 window.addEventListener('click', function(e) {
     const editModal = document.getElementById('editModal');
     const deleteModal = document.getElementById('deleteModal');
@@ -525,9 +484,6 @@ window.addEventListener('click', function(e) {
     }
 });
 
-
-
-// Export functions for potential use
 window.AdminPanel = {
     filterAppointments,
     clearFilters,

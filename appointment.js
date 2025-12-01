@@ -1,6 +1,3 @@
-// Car Workshop Appointment System - Client-side JavaScript
-
-// Sample mechanics data (in real application, this would come from backend)
 const mechanics = [
     { id: 1, name: "John Smith", specialization: "Engine Specialist", available_slots: 2 },
     { id: 2, name: "Sarah Johnson", specialization: "Transmission Expert", available_slots: 4 },
@@ -9,7 +6,6 @@ const mechanics = [
     { id: 5, name: "David Lee", specialization: "General Mechanic", available_slots: 0 }
 ];
 
-// Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Appointment page JavaScript loaded!');
     
@@ -19,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-// Load mechanics availability display
 function loadMechanics() {
     const mechanicsList = document.getElementById('mechanics-list');
     const mechanicSelect = document.getElementById('mechanic');
@@ -45,7 +40,6 @@ function loadMechanics() {
     }
 }
 
-// Create mechanic card element
 function createMechanicCard(mechanic) {
     const card = document.createElement('div');
     card.className = 'mechanic-card';
@@ -70,7 +64,6 @@ function createMechanicCard(mechanic) {
     return card;
 }
 
-// Set minimum date to today
 function setMinDate() {
     const dateInput = document.getElementById('appointmentDate');
     if (dateInput) {
@@ -79,23 +72,19 @@ function setMinDate() {
     }
 }
 
-// Setup form validation
 function setupFormValidation() {
     const form = document.getElementById('appointmentForm');
     if (!form) return;
     
-    // Real-time validation
     const inputs = form.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
         input.addEventListener('blur', () => validateField(input));
         input.addEventListener('input', () => clearError(input));
     });
     
-    // Form submission
     form.addEventListener('submit', handleFormSubmit);
 }
 
-// Validate individual field
 function validateField(field) {
     const fieldName = field.name;
     const value = field.value.trim();
@@ -190,7 +179,6 @@ function validateField(field) {
     return isValid;
 }
 
-// Show field error
 function showFieldError(field, message) {
     const errorId = getErrorId(field.name);
     const errorElement = document.getElementById(errorId);
@@ -201,7 +189,6 @@ function showFieldError(field, message) {
     }
 }
 
-// Clear field error
 function clearError(field) {
     const errorId = getErrorId(field.name);
     const errorElement = document.getElementById(errorId);
@@ -212,7 +199,6 @@ function clearError(field) {
     }
 }
 
-// Get error element ID for field
 function getErrorId(fieldName) {
     const errorMap = {
         'client_name': 'nameError',
@@ -227,7 +213,6 @@ function getErrorId(fieldName) {
     return errorMap[fieldName] || fieldName + 'Error';
 }
 
-// Handle form submission
 function handleFormSubmit(e) {
     e.preventDefault();
     console.log('📝 Form submitted!');
@@ -242,7 +227,6 @@ function handleFormSubmit(e) {
         console.log(`  ${key}: ${value}`);
     }
     
-    // Validate all fields
     const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
     inputs.forEach(input => {
         if (!validateField(input)) {
@@ -260,31 +244,26 @@ function handleFormSubmit(e) {
     console.log('✅ Form validation passed');
 
     
-    // Check for duplicate appointments (client-side check)
     const appointmentDate = formData.get('appointment_date');
     const mechanicId = formData.get('mechanic_id');
     
-    // Submit to server
     submitAppointment(formData);
 }
 
-// Submit appointment to server
 function submitAppointment(formData) {
     console.log('📤 Submitting appointment to ultra_simple.php...');
     
-    // Show loading state
     const submitBtn = document.querySelector('.submit-btn');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Booking...';
     submitBtn.disabled = true;
     
-    // Create XMLHttpRequest
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'ultra_simple.php', true);
     
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
-            // Reset button state
+  
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
             
@@ -301,7 +280,6 @@ function submitAppointment(formData) {
                         document.getElementById('appointmentForm').reset();
                         setMinDate();
                         
-                        // Update mechanic availability
                         const mechanicId = parseInt(formData.get('mechanic_id'));
                         const mechanic = mechanics.find(m => m.id === mechanicId);
                         if (mechanic && mechanic.available_slots > 0) {
@@ -340,11 +318,9 @@ function submitAppointment(formData) {
         showMessage('Network error. Please check your connection and try again.', 'error');
     };
     
-    // Send the form data
     xhr.send(formData);
 }
 
-// Show message to user
 function showMessage(message, type) {
     const messageContainer = document.getElementById('messageContainer');
     const messageText = document.getElementById('messageText');
@@ -354,20 +330,16 @@ function showMessage(message, type) {
         messageContainer.className = `message-container ${type}`;
         messageContainer.style.display = 'block';
         
-        // Auto-hide after 5 seconds
         setTimeout(() => {
             messageContainer.style.display = 'none';
         }, 5000);
         
-        // Scroll to message
         messageContainer.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
-// Utility function to check appointment conflicts
 function checkAppointmentConflict(date, mechanicId) {
-    // In a real application, this would check against the database
-    // For now, we'll simulate some conflicts
+    
     const conflicts = [
         { date: '2025-12-05', mechanicId: 1 },
         { date: '2025-12-06', mechanicId: 2 }
@@ -378,7 +350,6 @@ function checkAppointmentConflict(date, mechanicId) {
     );
 }
 
-// Format date for display
 function formatDate(dateString) {
     const options = { 
         year: 'numeric', 
@@ -388,7 +359,6 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
-// Export functions for potential use in other scripts
 window.AppointmentSystem = {
     validateField,
     showMessage,

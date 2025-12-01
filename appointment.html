@@ -24,11 +24,9 @@
                 <h2>Book Your Appointment</h2>
                 <p class="instructions">Select your preferred mechanic and book an appointment. Each mechanic can handle maximum 4 appointments per day.</p>
                 
-                <!-- Mechanics availability display -->
                 <div class="mechanics-availability">
                     <h3>Available Mechanics</h3>
                     <div id="mechanics-list">
-                        <!-- This will be populated by JavaScript/PHP -->
                     </div>
                 </div>
 
@@ -73,7 +71,6 @@
                         <label for="mechanic">Select Mechanic *</label>
                         <select id="mechanic" name="mechanic_id" required>
                             <option value="">Choose a mechanic...</option>
-                            <!-- Options will be populated by JavaScript/PHP -->
                         </select>
                         <span class="error" id="mechanicError"></span>
                     </div>
@@ -87,7 +84,6 @@
                 </form>
             </section>
 
-            <!-- Success/Error Messages -->
             <div id="messageContainer" class="message-container" style="display: none;">
                 <p id="messageText"></p>
             </div>

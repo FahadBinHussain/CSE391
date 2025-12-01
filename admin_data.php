@@ -1,8 +1,6 @@
 <?php
-// Simple admin data fetcher for InfinityFree
 header('Content-Type: application/json');
 
-// Database connection
 $conn = new mysqli("sql100.infinityfree.com", "if0_40567257", "pNDYHILdSiTJ", "if0_40567257_car_workshop");
 
 if ($conn->connect_error) {
@@ -10,7 +8,6 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Get appointments with mechanic names
 $sql = "SELECT a.*, m.name as mechanic_name 
         FROM appointments a 
         LEFT JOIN mechanics m ON a.mechanic_id = m.id 
@@ -38,14 +35,12 @@ if ($result) {
         );
     }
     
-    // Get stats
     $stats = array(
         'total_appointments' => count($appointments),
         'today_appointments' => 0,
         'available_slots' => 20
     );
     
-    // Count today's appointments
     $today = date('Y-m-d');
     foreach ($appointments as $apt) {
         if ($apt['appointment_date'] == $today) {
