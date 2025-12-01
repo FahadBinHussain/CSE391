@@ -70,12 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.deleteAppointment = deleteAppointment;
     console.log('✅ Functions made globally accessible');
     
-    // Update debug status
-    const debugStatus = document.getElementById('debug-status');
-    if (debugStatus) {
-        debugStatus.textContent = 'JavaScript loaded! Functions accessible.';
-    }
-    
     loadAppointments();
     populateMechanicFilters();
     updateDashboardStats();
@@ -531,21 +525,7 @@ window.addEventListener('click', function(e) {
     }
 });
 
-// Test function for debugging
-function testEditFunction() {
-    console.log('🧪 Test edit function called');
-    if (appointments.length > 0) {
-        const firstId = appointments[0].id;
-        console.log('🔧 Testing edit with ID:', firstId);
-        editAppointment(firstId);
-    } else {
-        console.log('❌ No appointments to test with');
-        alert('No appointments loaded to test with');
-    }
-}
 
-// Make test function global
-window.testEditFunction = testEditFunction;
 
 // Export functions for potential use
 window.AdminPanel = {
