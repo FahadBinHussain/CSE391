@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Workshop - Appointment System</title>
+    <link rel="stylesheet" href="appointment.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Car Workshop Appointment System</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="appointment.html" class="active">Book Appointment</a></li>
+                    <li><a href="admin.html">Admin Panel</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="appointment-form-section">
+                <h2>Book Your Appointment</h2>
+                <p class="instructions">Select your preferred mechanic and book an appointment. Each mechanic can handle maximum 4 appointments per day.</p>
+                
+                <!-- Mechanics availability display -->
+                <div class="mechanics-availability">
+                    <h3>Available Mechanics</h3>
+                    <div id="mechanics-list">
+                        <!-- This will be populated by JavaScript/PHP -->
+                    </div>
+                </div>
+
+                <form id="appointmentForm" action="book_appointment.php" method="POST">
+                    <div class="form-group">
+                        <label for="clientName">Full Name *</label>
+                        <input type="text" id="clientName" name="client_name" required>
+                        <span class="error" id="nameError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address *</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                        <span class="error" id="addressError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                        <span class="error" id="phoneError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="carLicense">Car License Number *</label>
+                        <input type="text" id="carLicense" name="car_license" required>
+                        <span class="error" id="licenseError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="carEngine">Car Engine Number *</label>
+                        <input type="text" id="carEngine" name="car_engine" required>
+                        <span class="error" id="engineError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentDate">Appointment Date *</label>
+                        <input type="date" id="appointmentDate" name="appointment_date" required>
+                        <span class="error" id="dateError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mechanic">Select Mechanic *</label>
+                        <select id="mechanic" name="mechanic_id" required>
+                            <option value="">Choose a mechanic...</option>
+                            <!-- Options will be populated by JavaScript/PHP -->
+                        </select>
+                        <span class="error" id="mechanicError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="carIssue">Describe Car Issue (Optional)</label>
+                        <textarea id="carIssue" name="car_issue" rows="4" placeholder="Please describe any specific issues or symptoms..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Book Appointment</button>
+                </form>
+            </section>
+
+            <!-- Success/Error Messages -->
+            <div id="messageContainer" class="message-container" style="display: none;">
+                <p id="messageText"></p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Car Workshop Appointment System - CSE 391 Assignment</p>
+        </footer>
+    </div>
+
+    <script src="appointment.js"></script>
+</body>
+</html>

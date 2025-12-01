@@ -1,0 +1,373 @@
+// Car Workshop Admin Panel JavaScript
+
+let appointments = [];
+let currentEditId = null;
+let currentDeleteId = null;
+
+// Sample mechanics data (same as in appointment.js)
+const mechanics = [
+    { id: 1, name: "John Smith", specialization: "Engine Specialist" },
+    { id: 2, name: "Sarah Johnson", specialization: "Transmission Expert" },
+    { id: 3, name: "Mike Wilson", specialization: "Electrical Systems" },
+    { id: 4, name: "Lisa Brown", specialization: "Brake Specialist" },
+    { id: 5, name: "David Lee", specialization: "General Mechanic" }
+];
+
+// Sample appointments data (in real app, this comes from database)
+const sampleAppointments = [
+    {
+        id: 1,
+        client_name: "Alice Johnson",
+        address: "123 Main St, City",
+        phone: "+1-234-567-8901",
+        car_license: "ABC123",
+        car_engine: "ENG456789",
+        appointment_date: "2025-12-05",
+        mechanic_id: 1,
+        mechanic_name: "John Smith",
+        status: "scheduled",
+        created_at: "2025-12-01T10:00:00Z"
+    },
+    {
+        id: 2,
+        client_name: "Bob Wilson",
+        address: "456 Oak Ave, Town",
+        phone: "+1-234-567-8902",
+        car_license: "XYZ789",
+        car_engine: "ENG123456",
+        appointment_date: "2025-12-06",
+        mechanic_id: 2,
+        mechanic_name: "Sarah Johnson",
+        status: "in_progress",
+        created_at: "2025-12-01T11:30:00Z"
+    },
+    {
+        id: 3,
+        client_name: "Carol Smith",
+        address: "789 Pine Rd, Village",
+        phone: "+1-234-567-8903",
+        car_license: "LMN456",
+        car_engine: "ENG789123",
+        appointment_date: "2025-12-04",
+        mechanic_id: 1,
+        mechanic_name: "John Smith",
+        status: "completed",
+        created_at: "2025-11-30T14:15:00Z"
+    }
+];
+
+// Initialize admin panel
+document.addEventListener('DOMContentLoaded', function() {
+    loadAppointments();
+    populateMechanicFilters();
+    updateDashboardStats();
+});
+
+// Load appointments from server (simulated)
+function loadAppointments() {
+    // In real application, this would be an AJAX call
+    appointments = [...sampleAppointments];
+    displayAppointments(appointments);
+}
+
+// Display appointments in table
+function displayAppointments(appointmentsToShow) {
+    const tbody = document.getElementById('appointmentsBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (appointmentsToShow.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 20px; color: #666;">
+                    No appointments found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    appointmentsToShow.forEach(appointment => {
+        const row = createAppointmentRow(appointment);
+        tbody.appendChild(row);
+    });
+}
+
+// Create appointment table row
+function createAppointmentRow(appointment) {
+    const row = document.createElement('tr');
+    
+    const statusClass = `status-${appointment.status.replace('_', '-')}`;
+    const formattedDate = formatDate(appointment.appointment_date);
+    
+    row.innerHTML = `
+        <td>#${appointment.id}</td>
+        <td>${appointment.client_name}</td>
+        <td>${appointment.phone}</td>
+        <td>${appointment.car_license}</td>
+        <td>${formattedDate}</td>
+        <td>${appointment.mechanic_name}</td>
+        <td><span class="status-badge ${statusClass}">${formatStatus(appointment.status)}</span></td>
+        <td>
+            <button class="action-btn edit-btn" onclick="editAppointment(${appointment.id})">Edit</button>
+            <button class="action-btn delete-btn" onclick="deleteAppointment(${appointment.id})">Delete</button>
+        </td>
+    `;
+    
+    return row;
+}
+
+// Populate mechanic filter dropdown
+function populateMechanicFilters() {
+    const filterSelect = document.getElementById('filterMechanic');
+    const editSelect = document.getElementById('editMechanic');
+    
+    const selects = [filterSelect, editSelect].filter(select => select);
+    
+    selects.forEach(select => {
+        // Keep existing options if any
+        const existingOptions = select.innerHTML;
+        
+        mechanics.forEach(mechanic => {
+            const option = document.createElement('option');
+            option.value = mechanic.id;
+            option.textContent = `${mechanic.name} - ${mechanic.specialization}`;
+            select.appendChild(option);
+        });
+    });
+}
+
+// Update dashboard statistics
+function updateDashboardStats() {
+    const totalElement = document.getElementById('totalAppointments');
+    const todayElement = document.getElementById('todayAppointments');
+    const availableElement = document.getElementById('availableSlots');
+    
+    if (totalElement) {
+        totalElement.textContent = appointments.length;
+    }
+    
+    if (todayElement) {
+        const today = new Date().toISOString().split('T')[0];
+        const todayAppointments = appointments.filter(apt => apt.appointment_date === today);
+        todayElement.textContent = todayAppointments.length;
+    }
+    
+    if (availableElement) {
+        // Calculate available slots (5 mechanics × 4 slots - booked appointments for today)
+        const today = new Date().toISOString().split('T')[0];
+        const todayBooked = appointments.filter(apt => 
+            apt.appointment_date === today && apt.status !== 'cancelled'
+        ).length;
+        const totalSlots = mechanics.length * 4;
+        availableElement.textContent = Math.max(0, totalSlots - todayBooked);
+    }
+}
+
+// Filter appointments
+function filterAppointments() {
+    const dateFilter = document.getElementById('filterDate').value;
+    const mechanicFilter = document.getElementById('filterMechanic').value;
+    
+    let filtered = [...appointments];
+    
+    if (dateFilter) {
+        filtered = filtered.filter(apt => apt.appointment_date === dateFilter);
+    }
+    
+    if (mechanicFilter) {
+        filtered = filtered.filter(apt => apt.mechanic_id == mechanicFilter);
+    }
+    
+    displayAppointments(filtered);
+}
+
+// Clear filters
+function clearFilters() {
+    document.getElementById('filterDate').value = '';
+    document.getElementById('filterMechanic').value = '';
+    displayAppointments(appointments);
+}
+
+// Edit appointment
+function editAppointment(appointmentId) {
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    if (!appointment) return;
+    
+    currentEditId = appointmentId;
+    
+    // Populate edit form
+    document.getElementById('editAppointmentId').value = appointment.id;
+    document.getElementById('editClientName').value = appointment.client_name;
+    document.getElementById('editPhone').value = appointment.phone;
+    document.getElementById('editCarLicense').value = appointment.car_license;
+    document.getElementById('editDate').value = appointment.appointment_date;
+    document.getElementById('editMechanic').value = appointment.mechanic_id;
+    document.getElementById('editStatus').value = appointment.status;
+    
+    // Show modal
+    document.getElementById('editModal').style.display = 'block';
+}
+
+// Close edit modal
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    currentEditId = null;
+}
+
+// Handle edit form submission
+document.getElementById('editForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const appointmentId = parseInt(formData.get('appointment_id'));
+    
+    // Find and update appointment
+    const appointmentIndex = appointments.findIndex(apt => apt.id === appointmentId);
+    if (appointmentIndex === -1) return;
+    
+    // Update appointment data
+    appointments[appointmentIndex] = {
+        ...appointments[appointmentIndex],
+        appointment_date: formData.get('appointment_date'),
+        mechanic_id: parseInt(formData.get('mechanic_id')),
+        mechanic_name: getMechanicName(formData.get('mechanic_id')),
+        status: formData.get('status')
+    };
+    
+    // In real application, this would be an AJAX call to update_appointment.php
+    console.log('Updating appointment:', appointments[appointmentIndex]);
+    
+    // Refresh display
+    displayAppointments(appointments);
+    updateDashboardStats();
+    closeEditModal();
+    
+    // Show success message
+    showToast('Appointment updated successfully', 'success');
+});
+
+// Delete appointment
+function deleteAppointment(appointmentId) {
+    currentDeleteId = appointmentId;
+    document.getElementById('deleteModal').style.display = 'block';
+}
+
+// Close delete modal
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    currentDeleteId = null;
+}
+
+// Confirm delete
+function confirmDelete() {
+    if (!currentDeleteId) return;
+    
+    // Remove appointment from array
+    appointments = appointments.filter(apt => apt.id !== currentDeleteId);
+    
+    // In real application, this would be an AJAX call to delete_appointment.php
+    console.log('Deleting appointment ID:', currentDeleteId);
+    
+    // Refresh display
+    displayAppointments(appointments);
+    updateDashboardStats();
+    closeDeleteModal();
+    
+    // Show success message
+    showToast('Appointment deleted successfully', 'success');
+}
+
+// Get mechanic name by ID
+function getMechanicName(mechanicId) {
+    const mechanic = mechanics.find(m => m.id == mechanicId);
+    return mechanic ? mechanic.name : 'Unknown';
+}
+
+// Format status for display
+function formatStatus(status) {
+    const statusMap = {
+        'scheduled': 'Scheduled',
+        'in_progress': 'In Progress',
+        'completed': 'Completed',
+        'cancelled': 'Cancelled'
+    };
+    
+    return statusMap[status] || status;
+}
+
+// Format date for display
+function formatDate(dateString) {
+    const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+}
+
+// Show toast notification
+function showToast(message, type) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    // Add styles
+    Object.assign(toast.style, {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        padding: '15px 20px',
+        borderRadius: '5px',
+        color: 'white',
+        backgroundColor: type === 'success' ? '#27ae60' : '#e74c3c',
+        zIndex: '10000',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+        transform: 'translateX(400px)',
+        transition: 'transform 0.3s ease'
+    });
+    
+    // Add to DOM
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Close modals when clicking outside
+window.addEventListener('click', function(e) {
+    const editModal = document.getElementById('editModal');
+    const deleteModal = document.getElementById('deleteModal');
+    
+    if (e.target === editModal) {
+        closeEditModal();
+    }
+    
+    if (e.target === deleteModal) {
+        closeDeleteModal();
+    }
+});
+
+// Export functions for potential use
+window.AdminPanel = {
+    filterAppointments,
+    clearFilters,
+    editAppointment,
+    deleteAppointment,
+    appointments,
+    mechanics
+};

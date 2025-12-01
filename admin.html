@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Car Workshop</title>
+    <link rel="stylesheet" href="appointment.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Car Workshop - Admin Panel</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="appointment.html">Book Appointment</a></li>
+                    <li><a href="admin.html" class="active">Admin Panel</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="admin-section">
+                <h2>Appointment Management</h2>
+                
+                <!-- Statistics Dashboard -->
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h3>Total Appointments</h3>
+                        <p id="totalAppointments">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Today's Appointments</h3>
+                        <p id="todayAppointments">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Available Slots</h3>
+                        <p id="availableSlots">20</p>
+                    </div>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label for="filterDate">Filter by Date:</label>
+                        <input type="date" id="filterDate" onchange="filterAppointments()">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterMechanic">Filter by Mechanic:</label>
+                        <select id="filterMechanic" onchange="filterAppointments()">
+                            <option value="">All Mechanics</option>
+                            <!-- Options populated by JavaScript -->
+                        </select>
+                    </div>
+                    <button onclick="clearFilters()" class="clear-filters-btn">Clear Filters</button>
+                </div>
+
+                <!-- Appointments Table -->
+                <div class="table-container">
+                    <table id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client Name</th>
+                                <th>Phone</th>
+                                <th>Car License</th>
+                                <th>Appointment Date</th>
+                                <th>Mechanic</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsBody">
+                            <!-- Appointments will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Edit Appointment Modal -->
+                <div id="editModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Appointment</h3>
+                            <span class="close" onclick="closeEditModal()">&times;</span>
+                        </div>
+                        <form id="editForm">
+                            <input type="hidden" id="editAppointmentId" name="appointment_id">
+                            
+                            <div class="form-group">
+                                <label for="editClientName">Client Name:</label>
+                                <input type="text" id="editClientName" name="client_name" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editPhone">Phone:</label>
+                                <input type="text" id="editPhone" name="phone" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editCarLicense">Car License:</label>
+                                <input type="text" id="editCarLicense" name="car_license" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editDate">Appointment Date:</label>
+                                <input type="date" id="editDate" name="appointment_date" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editMechanic">Mechanic:</label>
+                                <select id="editMechanic" name="mechanic_id" required>
+                                    <!-- Options populated by JavaScript -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editStatus">Status:</label>
+                                <select id="editStatus" name="status" required>
+                                    <option value="scheduled">Scheduled</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+
+                            <div class="modal-actions">
+                                <button type="button" onclick="closeEditModal()" class="cancel-btn">Cancel</button>
+                                <button type="submit" class="save-btn">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div id="deleteModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Confirm Delete</h3>
+                            <span class="close" onclick="closeDeleteModal()">&times;</span>
+                        </div>
+                        <p>Are you sure you want to delete this appointment?</p>
+                        <div class="modal-actions">
+                            <button onclick="closeDeleteModal()" class="cancel-btn">Cancel</button>
+                            <button onclick="confirmDelete()" class="delete-btn">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Car Workshop Appointment System - Admin Panel</p>
+        </footer>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
