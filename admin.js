@@ -63,11 +63,63 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDashboardStats();
 });
 
-// Load appointments from server (simulated)
+// Load appointments from server
 function loadAppointments() {
-    // In real application, this would be an AJAX call
-    appointments = [...sampleAppointments];
-    displayAppointments(appointments);
+    console.log('🔄 Loading appointments from server...');
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'admin_data.php', true);
+    
+    xhr.onreadystatechange = function() {
+        console.log(`📡 XHR State: ${xhr.readyState}, Status: ${xhr.status}`);
+        
+        if (xhr.readyState === 4) {
+            console.log(`📥 Response received: Status ${xhr.status}`);
+            console.log('📄 Raw response:', xhr.responseText);
+            
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    console.log('📊 Parsed response:', response);
+                    
+                    if (response.success) {
+                        appointments = response.appointments;
+                        console.log('✅ Successfully loaded', appointments.length, 'appointments');
+                        console.log('📋 Appointments data:', appointments);
+                        
+                        displayAppointments(appointments);
+                        
+                        // Update dashboard stats
+                        if (response.stats) {
+                            console.log('📈 Updating stats:', response.stats);
+                            updateDashboardStatsFromServer(response.stats);
+                        }
+                        
+                        console.log('🎉 Admin data loaded successfully!');
+                    } else {
+                        console.error('❌ Server returned error:', response.error);
+                        console.log('🔄 Falling back to sample data...');
+                        appointments = [...sampleAppointments];
+                        displayAppointments(appointments);
+                    }
+                } catch (e) {
+                    console.error('❌ JSON parsing error:', e);
+                    console.log('📄 Raw response that failed to parse:', xhr.responseText);
+                    console.log('🔄 Falling back to sample data...');
+                    appointments = [...sampleAppointments];
+                    displayAppointments(appointments);
+                }
+            } else {
+                console.error('❌ HTTP error:', xhr.status, xhr.statusText);
+                console.log('🔄 Falling back to sample data...');
+                appointments = [...sampleAppointments];
+                displayAppointments(appointments);
+            }
+        }
+    };
+    
+    console.log('📤 Sending request to admin_data.php...');
+    xhr.send();
 }
 
 // Display appointments in table
@@ -162,6 +214,25 @@ function updateDashboardStats() {
         ).length;
         const totalSlots = mechanics.length * 4;
         availableElement.textContent = Math.max(0, totalSlots - todayBooked);
+    }
+}
+
+// Update stats from server response
+function updateDashboardStatsFromServer(stats) {
+    const totalElement = document.getElementById('totalAppointments');
+    const todayElement = document.getElementById('todayAppointments');
+    const availableElement = document.getElementById('availableSlots');
+    
+    if (totalElement && stats.total_appointments !== undefined) {
+        totalElement.textContent = stats.total_appointments;
+    }
+    
+    if (todayElement && stats.today_appointments !== undefined) {
+        todayElement.textContent = stats.today_appointments;
+    }
+    
+    if (availableElement && stats.available_slots !== undefined) {
+        availableElement.textContent = stats.available_slots;
     }
 }
 

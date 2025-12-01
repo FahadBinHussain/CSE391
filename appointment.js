@@ -263,7 +263,7 @@ function submitAppointment(formData) {
     
     // Create XMLHttpRequest
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'book_appointment.php', true);
+    xhr.open('POST', 'ultra_simple.php', true);
     
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
