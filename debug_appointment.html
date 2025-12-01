@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Car Workshop Appointment</title>
+    <link rel="stylesheet" href="appointment.css">
+    <style>
+        .debug-info {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #007cba;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Debug Mode - Car Workshop Appointment System</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="appointment.html">Normal Mode</a></li>
+                    <li><a href="debug_appointment.html" class="active">Debug Mode</a></li>
+                    <li><a href="test_db.php" target="_blank">Database Test</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="debug-section">
+                <h3>🔍 Debug Information</h3>
+                <div id="debugLog" class="debug-info">Debug log will appear here...</div>
+                <button onclick="clearDebugLog()">Clear Debug Log</button>
+                <button onclick="testConnection()">Test Database Connection</button>
+            </div>
+
+            <section class="appointment-form-section">
+                <h2>Book Your Appointment (Debug Mode)</h2>
+                
+                <form id="appointmentForm" action="book_appointment.php" method="POST">
+                    <div class="form-group">
+                        <label for="clientName">Full Name *</label>
+                        <input type="text" id="clientName" name="client_name" value="Test User" required>
+                        <span class="error" id="nameError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address *</label>
+                        <textarea id="address" name="address" rows="3" required>123 Test Street, Test City</textarea>
+                        <span class="error" id="addressError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" value="+1-555-0123" required>
+                        <span class="error" id="phoneError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="carLicense">Car License Number *</label>
+                        <input type="text" id="carLicense" name="car_license" value="TEST123" required>
+                        <span class="error" id="licenseError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="carEngine">Car Engine Number *</label>
+                        <input type="text" id="carEngine" name="car_engine" value="ENG123" required>
+                        <span class="error" id="engineError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentDate">Appointment Date *</label>
+                        <input type="date" id="appointmentDate" name="appointment_date" required>
+                        <span class="error" id="dateError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mechanic">Select Mechanic *</label>
+                        <select id="mechanic" name="mechanic_id" required>
+                            <option value="">Choose a mechanic...</option>
+                            <option value="1">John Smith - Engine Specialist</option>
+                            <option value="2">Sarah Johnson - Transmission Expert</option>
+                            <option value="3">Mike Wilson - Electrical Systems</option>
+                            <option value="4">Lisa Brown - Brake Specialist</option>
+                            <option value="5">David Lee - General Mechanic</option>
+                        </select>
+                        <span class="error" id="mechanicError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="carIssue">Describe Car Issue (Optional)</label>
+                        <textarea id="carIssue" name="car_issue" rows="4">Test appointment for debugging</textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Book Appointment (Debug)</button>
+                </form>
+            </section>
+
+            <div id="messageContainer" class="message-container" style="display: none;">
+                <p id="messageText"></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let debugLog = [];
+        
+        function addDebugLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.push(`[${timestamp}] ${message}`);
+            updateDebugDisplay();
+        }
+        
+        function updateDebugDisplay() {
+            const debugDiv = document.getElementById('debugLog');
+            debugDiv.innerHTML = debugLog.join('<br>');
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+        }
+        
+        function clearDebugLog() {
+            debugLog = [];
+            updateDebugDisplay();
+        }
+        
+        function testConnection() {
+            addDebugLog('Testing database connection...');
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'test_db.php', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        addDebugLog('✓ Database test page loaded successfully');
+                        window.open('test_db.php', '_blank');
+                    } else {
+                        addDebugLog('✗ Database test failed: HTTP ' + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        }
+        
+        // Initialize debug mode
+        document.addEventListener('DOMContentLoaded', function() {
+            addDebugLog('Debug mode initialized');
+            
+            // Set tomorrow's date as default
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('appointmentDate').value = tomorrow.toISOString().split('T')[0];
+            
+            // Setup form submission with detailed logging
+            const form = document.getElementById('appointmentForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                addDebugLog('Form submission started...');
+                
+                const formData = new FormData(form);
+                
+                // Log form data
+                addDebugLog('Form data:');
+                for (let [key, value] of formData.entries()) {
+                    addDebugLog(`  ${key}: ${value}`);
+                }
+                
+                const submitBtn = document.querySelector('.submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Booking...';
+                submitBtn.disabled = true;
+                
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'book_appointment.php', true);
+                
+                xhr.onreadystatechange = function() {
+                    addDebugLog(`XHR state changed: readyState=${xhr.readyState}, status=${xhr.status}`);
+                    
+                    if (xhr.readyState === 4) {
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                        
+                        addDebugLog(`Response status: ${xhr.status}`);
+                        addDebugLog(`Response text: ${xhr.responseText}`);
+                        
+                        if (xhr.status === 200) {
+                            try {
+                                const response = JSON.parse(xhr.responseText);
+                                addDebugLog(`Parsed response: ${JSON.stringify(response)}`);
+                                
+                                if (response.success) {
+                                    addDebugLog('✓ Appointment booked successfully!');
+                                    showMessage('Appointment booked successfully! ID: ' + response.appointment_id, 'success');
+                                } else {
+                                    addDebugLog('✗ Booking failed: ' + JSON.stringify(response.errors));
+                                    showMessage('Booking failed: ' + (response.errors ? response.errors.join(', ') : 'Unknown error'), 'error');
+                                }
+                            } catch (e) {
+                                addDebugLog('✗ JSON parse error: ' + e.message);
+                                showMessage('Error: Invalid server response', 'error');
+                            }
+                        } else {
+                            addDebugLog('✗ HTTP error: ' + xhr.status);
+                            showMessage('Server error: HTTP ' + xhr.status, 'error');
+                        }
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    addDebugLog('✗ Network error occurred');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    showMessage('Network error occurred', 'error');
+                };
+                
+                addDebugLog('Sending request to book_appointment.php...');
+                xhr.send(formData);
+            });
+        });
+        
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageText = document.getElementById('messageText');
+            
+            if (messageContainer && messageText) {
+                messageText.textContent = message;
+                messageContainer.className = `message-container ${type}`;
+                messageContainer.style.display = 'block';
+                
+                addDebugLog(`Message displayed: [${type}] ${message}`);
+                
+                setTimeout(() => {
+                    messageContainer.style.display = 'none';
+                }, 10000);
+            }
+        }
+    </script>
+</body>
+</html>

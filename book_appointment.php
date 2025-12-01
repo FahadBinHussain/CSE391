@@ -1,5 +1,17 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Log all incoming data for debugging
+error_log("POST data received: " . print_r($_POST, true));
+
 include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -48,17 +60,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Please select a mechanic";
     }
     
-    // Check if mechanic exists
-    $mechanic_check = $conn->prepare("SELECT id, name FROM mechanics WHERE id = ?");
-    $mechanic_check->bind_param("i", $mechanic_id);
-    $mechanic_check->execute();
-    $mechanic_result = $mechanic_check->get_result();
-    
-    if ($mechanic_result->num_rows == 0) {
-        $errors[] = "Selected mechanic does not exist";
-    } else {
-        $mechanic_data = $mechanic_result->fetch_assoc();
-        $mechanic_name = $mechanic_data['name'];
+    // Check if mechanic exists (with error handling for InfinityFree)
+    try {
+        $mechanic_check = $conn->prepare("SELECT id, name FROM mechanics WHERE id = ?");
+        if (!$mechanic_check) {
+            error_log("Mechanic check prepare failed: " . $conn->error);
+            $errors[] = "Database error: Could not prepare mechanic query";
+        } else {
+            $mechanic_check->bind_param("i", $mechanic_id);
+            if (!$mechanic_check->execute()) {
+                error_log("Mechanic check execute failed: " . $mechanic_check->error);
+                $errors[] = "Database error: Could not execute mechanic query";
+            } else {
+                $mechanic_result = $mechanic_check->get_result();
+                
+                if ($mechanic_result->num_rows == 0) {
+                    $errors[] = "Selected mechanic does not exist";
+                } else {
+                    $mechanic_data = $mechanic_result->fetch_assoc();
+                    $mechanic_name = $mechanic_data['name'];
+                }
+            }
+            $mechanic_check->close();
+        }
+    } catch (Exception $e) {
+        error_log("Mechanic check exception: " . $e->getMessage());
+        $errors[] = "Database error during mechanic validation";
     }
     
     // Check if client already has appointment on this date
@@ -95,28 +122,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     
-    // Insert appointment
-    $insert_stmt = $conn->prepare("INSERT INTO appointments (client_name, address, phone, car_license, car_engine, appointment_date, mechanic_id, car_issue, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'scheduled', NOW())");
-    $insert_stmt->bind_param("ssssssiss", $client_name, $address, $phone, $car_license, $car_engine, $appointment_date, $mechanic_id, $car_issue);
-    
-    if ($insert_stmt->execute()) {
-        $appointment_id = $conn->insert_id;
+    // Insert appointment with better error handling
+    try {
+        error_log("Attempting to insert appointment for: $client_name");
         
-        echo json_encode([
-            'success' => true,
-            'message' => 'Appointment booked successfully!',
-            'appointment_id' => $appointment_id,
-            'appointment_date' => $appointment_date,
-            'mechanic_name' => $mechanic_name
-        ]);
-    } else {
+        $insert_stmt = $conn->prepare("INSERT INTO appointments (client_name, address, phone, car_license, car_engine, appointment_date, mechanic_id, car_issue, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'scheduled', NOW())");
+        
+        if (!$insert_stmt) {
+            error_log("Insert prepare failed: " . $conn->error);
+            echo json_encode([
+                'success' => false,
+                'errors' => ['Database prepare error: ' . $conn->error]
+            ]);
+            exit;
+        }
+        
+        $insert_stmt->bind_param("sssssis", $client_name, $address, $phone, $car_license, $car_engine, $appointment_date, $mechanic_id, $car_issue);
+        
+        if ($insert_stmt->execute()) {
+            $appointment_id = $conn->insert_id;
+            error_log("Appointment inserted successfully with ID: $appointment_id");
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Appointment booked successfully!',
+                'appointment_id' => $appointment_id,
+                'appointment_date' => $appointment_date,
+                'mechanic_name' => isset($mechanic_name) ? $mechanic_name : 'Unknown'
+            ]);
+        } else {
+            error_log("Insert execute failed: " . $insert_stmt->error);
+            echo json_encode([
+                'success' => false,
+                'errors' => ['Database execute error: ' . $insert_stmt->error]
+            ]);
+        }
+        
+        $insert_stmt->close();
+        
+    } catch (Exception $e) {
+        error_log("Insert exception: " . $e->getMessage());
         echo json_encode([
             'success' => false,
-            'errors' => ['Failed to book appointment. Please try again.']
+            'errors' => ['Database exception: ' . $e->getMessage()]
         ]);
     }
-    
-    $insert_stmt->close();
     
 } else {
     echo json_encode([

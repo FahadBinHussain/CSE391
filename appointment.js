@@ -253,7 +253,7 @@ function handleFormSubmit(e) {
     submitAppointment(formData);
 }
 
-// Submit appointment (simulated)
+// Submit appointment to server
 function submitAppointment(formData) {
     // Show loading state
     const submitBtn = document.querySelector('.submit-btn');
@@ -261,31 +261,62 @@ function submitAppointment(formData) {
     submitBtn.textContent = 'Booking...';
     submitBtn.disabled = true;
     
-    // Simulate server request
-    setTimeout(() => {
-        // In a real application, this would be an actual server request
-        const success = Math.random() > 0.1; // 90% success rate for demo
-        
-        if (success) {
-            showMessage('Appointment booked successfully! You will receive a confirmation shortly.', 'success');
-            document.getElementById('appointmentForm').reset();
-            setMinDate();
+    // Create XMLHttpRequest
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'book_appointment.php', true);
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            // Reset button state
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
             
-            // Update mechanic availability (simulated)
-            const mechanicId = parseInt(formData.get('mechanic_id'));
-            const mechanic = mechanics.find(m => m.id === mechanicId);
-            if (mechanic && mechanic.available_slots > 0) {
-                mechanic.available_slots--;
-                loadMechanics(); // Refresh mechanics display
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    
+                    if (response.success) {
+                        showMessage('Appointment booked successfully! Appointment ID: ' + response.appointment_id, 'success');
+                        document.getElementById('appointmentForm').reset();
+                        setMinDate();
+                        
+                        // Update mechanic availability
+                        const mechanicId = parseInt(formData.get('mechanic_id'));
+                        const mechanic = mechanics.find(m => m.id === mechanicId);
+                        if (mechanic && mechanic.available_slots > 0) {
+                            mechanic.available_slots--;
+                            loadMechanics(); // Refresh mechanics display
+                        }
+                    } else {
+                        let errorMsg = 'Booking failed: ';
+                        if (response.errors && response.errors.length > 0) {
+                            errorMsg += response.errors.join(', ');
+                        } else {
+                            errorMsg += 'Unknown error occurred';
+                        }
+                        showMessage(errorMsg, 'error');
+                    }
+                } catch (e) {
+                    console.error('Response parsing error:', e);
+                    console.log('Raw response:', xhr.responseText);
+                    showMessage('Error: Invalid server response. Check console for details.', 'error');
+                }
+            } else {
+                console.error('HTTP Error:', xhr.status, xhr.statusText);
+                console.log('Response:', xhr.responseText);
+                showMessage('Server error (HTTP ' + xhr.status + '). Check console for details.', 'error');
             }
-        } else {
-            showMessage('Sorry, there was an error booking your appointment. Please try again.', 'error');
         }
-        
-        // Reset button
+    };
+    
+    xhr.onerror = function() {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
-    }, 2000);
+        showMessage('Network error. Please check your connection and try again.', 'error');
+    };
+    
+    // Send the form data
+    xhr.send(formData);
 }
 
 // Show message to user
