@@ -183,7 +183,7 @@
                 submitBtn.disabled = true;
                 
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'book_appointment.php', true);
+                xhr.open('POST', 'simple_book.php', true);
                 
                 xhr.onreadystatechange = function() {
                     addDebugLog(`XHR state changed: readyState=${xhr.readyState}, status=${xhr.status}`);
@@ -225,7 +225,7 @@
                     showMessage('Network error occurred', 'error');
                 };
                 
-                addDebugLog('Sending request to book_appointment.php...');
+                addDebugLog('Sending request to simple_book.php...');
                 xhr.send(formData);
             });
         });
