@@ -274,7 +274,6 @@ function submitAppointment(formData) {
                     if (response.success) {
                         console.log('🎉 Appointment booked successfully!', response);
                         
-                        // Check if discount was applied
                         let successMessage = 'Booking confirmed! Appointment ID: ' + response.appointment_id;
                         if (response.discount_applied && response.discount_applied > 0) {
                             successMessage = 'Booking confirmed! You have received ' + response.discount_applied + '% discount! 🎉';
