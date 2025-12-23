@@ -484,11 +484,142 @@ window.addEventListener('click', function(e) {
     }
 });
 
+// Discount Management Functions
+function loadDiscountRules() {
+    console.log('📊 Loading discount rules...');
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'manage_discount.php?action=list', true);
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    displayDiscountRules(response.discounts);
+                }
+            } catch (e) {
+                console.error('Error loading discount rules:', e);
+            }
+        }
+    };
+    
+    xhr.send();
+}
+
+function displayDiscountRules(discounts) {
+    const discountsList = document.getElementById('discountsList');
+    if (!discountsList) return;
+    
+    if (discounts.length === 0) {
+        discountsList.innerHTML = '<p style="color: #888; font-style: italic;">No active discount rules set.</p>';
+        return;
+    }
+    
+    discountsList.innerHTML = discounts.map(discount => `
+        <div style="padding: 10px; margin: 5px 0; background: #f0f0f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>Date:</strong> ${formatDate(discount.valid_date)} | 
+                <strong>Sum Value:</strong> ${discount.summation_value} | 
+                <strong>Discount:</strong> ${discount.discount_percentage}%
+            </div>
+            <button onclick="deleteDiscountRule(${discount.id})" style="padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Delete</button>
+        </div>
+    `).join('');
+}
+
+function deleteDiscountRule(id) {
+    if (!confirm('Are you sure you want to delete this discount rule?')) return;
+    
+    const formData = new FormData();
+    formData.append('id', id);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'manage_discount.php?action=delete', true);
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    showDiscountMessage('Discount rule deleted successfully!', 'success');
+                    loadDiscountRules();
+                } else {
+                    showDiscountMessage('Failed to delete discount rule', 'error');
+                }
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+    };
+    
+    xhr.send(formData);
+}
+
+function setupDiscountForm() {
+    const discountForm = document.getElementById('discountForm');
+    if (!discountForm) return;
+    
+    discountForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(discountForm);
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'manage_discount.php?action=set', true);
+        
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        showDiscountMessage('Discount rule set successfully!', 'success');
+                        discountForm.reset();
+                        loadDiscountRules();
+                    } else {
+                        showDiscountMessage(response.error || 'Failed to set discount rule', 'error');
+                    }
+                } catch (e) {
+                    console.error('Error:', e);
+                    showDiscountMessage('An error occurred', 'error');
+                }
+            }
+        };
+        
+        xhr.send(formData);
+    });
+}
+
+function showDiscountMessage(message, type) {
+    const messageDiv = document.getElementById('discountMessage');
+    if (!messageDiv) return;
+    
+    messageDiv.textContent = message;
+    messageDiv.style.display = 'block';
+    messageDiv.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+    messageDiv.style.color = type === 'success' ? '#155724' : '#721c24';
+    messageDiv.style.border = `1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'}`;
+    
+    setTimeout(() => {
+        messageDiv.style.display = 'none';
+    }, 5000);
+}
+
+// Initialize discount management when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupDiscountForm();
+    loadDiscountRules();
+});
+
+window.deleteDiscountRule = deleteDiscountRule;
+
 window.AdminPanel = {
     filterAppointments,
     clearFilters,
     editAppointment,
     deleteAppointment,
     appointments,
-    mechanics
+    mechanics,
+    loadDiscountRules,
+    deleteDiscountRule
 };

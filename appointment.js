@@ -267,16 +267,20 @@ function submitAppointment(formData) {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
             
-            if (xhr.status === 200) {
+                if (xhr.status === 200) {
                 try {
                     const response = JSON.parse(xhr.responseText);
                     
                     if (response.success) {
                         console.log('🎉 Appointment booked successfully!', response);
                         
-
+                        // Check if discount was applied
+                        let successMessage = 'Booking confirmed! Appointment ID: ' + response.appointment_id;
+                        if (response.discount_applied && response.discount_applied > 0) {
+                            successMessage = 'Booking confirmed! You have received ' + response.discount_applied + '% discount! 🎉';
+                        }
                         
-                        showMessage('Appointment booked successfully! Appointment ID: ' + response.appointment_id, 'success');
+                        showMessage(successMessage, 'success');
                         document.getElementById('appointmentForm').reset();
                         setMinDate();
                         
@@ -288,8 +292,6 @@ function submitAppointment(formData) {
                         }
                     } else {
                         console.log('❌ Booking failed:', response);
-                        
-
                         
                         let errorMsg = 'Booking failed: ';
                         if (response.errors && response.errors.length > 0) {

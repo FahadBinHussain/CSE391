@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     exit;
 }
 
-$conn = new mysqli("sql100.infinityfree.com", "if0_40567257", "pNDYHILdSiTJ", "if0_40567257_car_workshop");
+$conn = new mysqli("localhost", "root", "", "car_workshop");
 
 if ($conn->connect_error) {
     echo '{"success": false, "error": "Connection failed"}';

@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     exit;
 }
 
-$conn = new mysqli("sql100.infinityfree.com", "if0_40567257", "pNDYHILdSiTJ", "if0_40567257_car_workshop");
+$conn = new mysqli("localhost", "root", "", "car_workshop");
 
 if ($conn->connect_error) {
     echo '{"success": false, "errors": ["Connection failed"]}';
@@ -30,11 +30,49 @@ if (empty($name) || empty($phone) || empty($date) || $mechanic == 0) {
     exit;
 }
 
-$sql = "INSERT INTO appointments (client_name, address, phone, car_license, car_engine, appointment_date, mechanic_id, car_issue, status) VALUES ('$name', '$address', '$phone', '$license', '$engine', '$date', $mechanic, '$issue', 'scheduled')";
+// Check for discount rule
+$discount_applied = 0.00;
+$discount_message = "";
+
+$discount_sql = "SELECT * FROM discount_rules WHERE valid_date = '$date' LIMIT 1";
+$discount_result = $conn->query($discount_sql);
+
+if ($discount_result && $discount_result->num_rows > 0) {
+    $discount_rule = $discount_result->fetch_assoc();
+    $summation_value = $discount_rule['summation_value'];
+    $discount_percentage = $discount_rule['discount_percentage'];
+    
+    // Extract last 5 digits from phone number
+    $phone_digits = preg_replace('/[^0-9]/', '', $phone);
+    if (strlen($phone_digits) >= 5) {
+        $last_5_digits = substr($phone_digits, -5);
+        $digit_sum = array_sum(str_split($last_5_digits));
+        
+        // Check if sum matches the discount rule
+        if ($digit_sum == $summation_value) {
+            $discount_applied = $discount_percentage;
+            $discount_message = "Congratulations! You have received " . $discount_percentage . "% discount";
+        }
+    }
+}
+
+$sql = "INSERT INTO appointments (client_name, address, phone, car_license, car_engine, appointment_date, mechanic_id, car_issue, status, discount_applied) VALUES ('$name', '$address', '$phone', '$license', '$engine', '$date', $mechanic, '$issue', 'scheduled', $discount_applied)";
 
 if ($conn->query($sql) === TRUE) {
     $id = $conn->insert_id;
-    echo '{"success": true, "message": "Appointment booked!", "appointment_id": ' . $id . '}';
+    
+    $response = array(
+        'success' => true,
+        'message' => 'Appointment booked!',
+        'appointment_id' => $id
+    );
+    
+    if ($discount_applied > 0) {
+        $response['discount_applied'] = $discount_applied;
+        $response['discount_message'] = $discount_message;
+    }
+    
+    echo json_encode($response);
 } else {
     echo '{"success": false, "errors": ["Database error"]}';
 }
