@@ -8,11 +8,10 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Handle different actions
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $action == 'set') {
-    // Set a new discount rule
+
     $summation_value = intval($_POST['summation_value']);
     $discount_percentage = floatval($_POST['discount_percentage']);
     $valid_date = $conn->real_escape_string($_POST['valid_date']);
@@ -32,7 +31,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $action == 'set') {
         exit;
     }
     
-    // Use INSERT ON DUPLICATE KEY UPDATE to handle unique constraint
     $sql = "INSERT INTO discount_rules (summation_value, discount_percentage, valid_date) 
             VALUES ($summation_value, $discount_percentage, '$valid_date')
             ON DUPLICATE KEY UPDATE 
@@ -46,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $action == 'set') {
     }
     
 } elseif ($_SERVER["REQUEST_METHOD"] == "GET" && $action == 'list') {
-    // List all discount rules
     $sql = "SELECT * FROM discount_rules ORDER BY valid_date DESC";
     $result = $conn->query($sql);
     
@@ -67,7 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $action == 'set') {
     }
     
 } elseif ($_SERVER["REQUEST_METHOD"] == "GET" && $action == 'check') {
-    // Check if there's a discount for a specific date
     $date = $conn->real_escape_string($_GET['date']);
     
     $sql = "SELECT * FROM discount_rules WHERE valid_date = '$date' LIMIT 1";
@@ -86,7 +82,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $action == 'set') {
     }
     
 } elseif ($_SERVER["REQUEST_METHOD"] == "POST" && $action == 'delete') {
-    // Delete a discount rule
     $id = intval($_POST['id']);
     
     $sql = "DELETE FROM discount_rules WHERE id = $id";

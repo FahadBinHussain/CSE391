@@ -30,7 +30,6 @@ if (empty($name) || empty($phone) || empty($date) || $mechanic == 0) {
     exit;
 }
 
-// Check for discount rule
 $discount_applied = 0.00;
 $discount_message = "";
 
@@ -42,13 +41,11 @@ if ($discount_result && $discount_result->num_rows > 0) {
     $summation_value = $discount_rule['summation_value'];
     $discount_percentage = $discount_rule['discount_percentage'];
     
-    // Extract last 5 digits from phone number
     $phone_digits = preg_replace('/[^0-9]/', '', $phone);
     if (strlen($phone_digits) >= 5) {
         $last_5_digits = substr($phone_digits, -5);
         $digit_sum = array_sum(str_split($last_5_digits));
         
-        // Check if sum matches the discount rule
         if ($digit_sum == $summation_value) {
             $discount_applied = $discount_percentage;
             $discount_message = "Congratulations! You have received " . $discount_percentage . "% discount";
