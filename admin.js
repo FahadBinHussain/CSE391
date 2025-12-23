@@ -484,7 +484,6 @@ window.addEventListener('click', function(e) {
     }
 });
 
-// Discount Management Functions
 function loadDiscountRules() {
     console.log('📊 Loading discount rules...');
     
