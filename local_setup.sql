@@ -1,11 +1,6 @@
--- Local Database Setup for Car Workshop
--- Use this file to set up your local MySQL database
-
--- Create database
 CREATE DATABASE IF NOT EXISTS car_workshop;
 USE car_workshop;
 
--- Create mechanics table
 CREATE TABLE IF NOT EXISTS mechanics (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -15,7 +10,6 @@ CREATE TABLE IF NOT EXISTS mechanics (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create appointments table with discount_applied column
 CREATE TABLE IF NOT EXISTS appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     client_name VARCHAR(100) NOT NULL,
@@ -31,7 +25,6 @@ CREATE TABLE IF NOT EXISTS appointments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create discount_rules table
 CREATE TABLE IF NOT EXISTS discount_rules (
     id INT AUTO_INCREMENT PRIMARY KEY,
     summation_value INT NOT NULL,
@@ -41,7 +34,6 @@ CREATE TABLE IF NOT EXISTS discount_rules (
     UNIQUE KEY unique_date (valid_date)
 );
 
--- Insert sample mechanics
 INSERT INTO mechanics (name, specialization) VALUES
 ('John Smith', 'Engine Specialist'),
 ('Sarah Johnson', 'Transmission Expert'),
@@ -49,8 +41,6 @@ INSERT INTO mechanics (name, specialization) VALUES
 ('Lisa Brown', 'Brake Specialist'),
 ('David Lee', 'General Mechanic');
 
--- Insert a sample discount rule (optional)
--- Example: If last 5 digits sum to 30, customer gets 10% discount on 2025-12-25
 INSERT INTO discount_rules (summation_value, discount_percentage, valid_date) VALUES
 (30, 10.00, '2025-12-25');
 
